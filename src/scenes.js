@@ -6,6 +6,7 @@
  * que soit la vitesse de la machine.
  *
  * Textes, couleurs et durées : config/video.config.json
+ * v2 : écran final avec carte « essai gratuit » + contact WhatsApp (brand.ctaCard, style : endcard.css)
  */
 (function () {
   'use strict';
@@ -165,6 +166,12 @@
   function iconArrow(color) {
     return h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: color, 'stroke-width': 2.8, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' },
       h('path', { d: 'M4 12h15M13 6l6 6-6 6' }));
+  }
+
+  // Combiné téléphonique (icône générique de contact, tracé simple)
+  function iconPhone(color) {
+    return h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: color, 'stroke-width': 2.2, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' },
+      h('path', { d: 'M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z' }));
   }
 
   // Logo : carré orange doré avec un « G » blanc tracé
@@ -541,8 +548,58 @@
   }
 
   /* ------------------------------------------------------------------ */
-  /* Séquence 4 — la signature                                           */
+  /* Séquence 4 — la signature + carte d'appel à l'action                */
   /* ------------------------------------------------------------------ */
+
+  // Carte finale : « Profitez de 7 jours d'essai gratuit… » puis contact WhatsApp (aucun numéro affiché).
+  // Textes : brand.ctaCard dans config/video.config.json. `at` = instant d'apparition (secondes).
+  function buildEndCard(sc, at, E) {
+    var lines = E.lines || [];
+    var hi = E.highlight === undefined ? 1 : E.highlight;
+    var contactAt = at + (E.contactDelay === undefined ? 4.0 : E.contactDelay);
+
+    var card = h('div', { class: 'endcard' });
+    enter(card, at, { dur: 0.8, dy: 90, scale: 0.94, ease: EASE_POP });
+
+    if (E.badge) {
+      var badge = h('div', { class: 'ec-badge' }, E.badge);
+      enter(badge, at + 0.3, { dur: 0.6, dy: 20 });
+      card.appendChild(badge);
+    }
+
+    // Message principal, ligne par ligne ; la ligne mise en valeur est surlignée en doré
+    var title = h('div', { class: 'ec-title' });
+    lines.forEach(function (txt, i) {
+      var inner = i === hi ? h('span', { class: 'ec-hi' }, txt) : txt;
+      var line = h('div', { class: 'ec-line' }, inner);
+      enter(line, at + 0.5 + i * 0.3, { dur: 0.7, dy: 30, blur: 8 });
+      if (i === hi) {
+        anim(inner, [{ backgroundSize: '0% 100%' }, { backgroundSize: '100% 100%' }], { at: at + 1.5, dur: 0.8, ease: EASE_IO });
+      }
+      title.appendChild(line);
+    });
+    card.appendChild(title);
+
+    // Séparateur, puis invitation à contacter sur WhatsApp
+    var sep = h('div', { class: 'ec-sep' });
+    anim(sep, [{ opacity: 0, transform: 'scaleX(0)' }, { opacity: 1, transform: 'scaleX(1)' }], { at: contactAt - 0.2, dur: 0.6, ease: EASE_IO });
+    card.appendChild(sep);
+
+    var ico = h('div', { class: 'ec-ico' }, iconPhone('#FFFFFF'));
+    enter(ico, contactAt, { dur: 0.6, dy: 0, scale: 0.4, ease: EASE_POP });
+    // légère pulsation de l'icône, après son apparition (propriété différente de l'apparition : pas de conflit)
+    anim(ico, [{ filter: 'brightness(1)' }, { filter: 'brightness(1.15)' }, { filter: 'brightness(1)' }],
+      { at: contactAt + 1.4, dur: 1.2, iterations: 2, ease: EASE_IO });
+
+    var text = h('div', { class: 'ec-text' });
+    (E.contact || []).forEach(function (txt, i) {
+      var span = h('span', {}, txt);
+      enter(span, contactAt + 0.2 + i * 0.3, { dur: 0.7, dy: 24, blur: 6 });
+      text.appendChild(span);
+    });
+    card.appendChild(h('div', { class: 'ec-contact' }, ico, text));
+    sc.appendChild(card);
+  }
 
   function buildSignature(stage, start, dur, cfg) {
     var B = cfg.brand;
@@ -571,14 +628,26 @@
     anim(rule, [{ width: '0px', opacity: 0 }, { width: '380px', opacity: 1 }], { at: start + 1.6, dur: 0.8, ease: EASE_IO });
     var tag = h('div', { class: 'tagline' }, B.tagline);
     enter(tag, start + 2.0, { dur: 0.9, dy: 30, blur: 8 });
-    sc.appendChild(h('div', { class: 's4-center' }, mark, word, rule, tag));
+    var center = h('div', { class: 's4-center' }, mark, word, rule, tag);
+    sc.appendChild(center);
 
-    var cta = h('div', { class: 'cta' }, h('span', {}, B.cta), iconArrow(C.navy));
-    enter(cta, start + 3.6, { dur: 0.7, dy: 40, scale: 0.9, ease: EASE_POP });
-    sc.appendChild(cta);
-    // Légère pulsation du bouton, après son apparition
-    anim(cta, [{ filter: 'brightness(1)' }, { filter: 'brightness(1.12)' }, { filter: 'brightness(1)' }],
-      { at: start + 4.8, dur: 1.4, iterations: 2, ease: EASE_IO });
+    if (B.ctaCard) {
+      // v2 : le bloc logo + slogan remonte et rétrécit, puis la carte « essai gratuit » prend la place
+      var cardAt = (cfg.scenes.signature.ctaAt === undefined ? 5.4 : cfg.scenes.signature.ctaAt);
+      anim(center, [
+        { transform: 'translateY(0px) scale(1)' },
+        { transform: 'translateY(-210px) scale(0.72)' }
+      ], { at: start + cardAt - 0.2, dur: 1.0, ease: EASE_IO });
+      buildEndCard(sc, start + cardAt, B.ctaCard);
+    } else {
+      // Version d'origine : simple bouton
+      var cta = h('div', { class: 'cta' }, h('span', {}, B.cta), iconArrow(C.navy));
+      enter(cta, start + 3.6, { dur: 0.7, dy: 40, scale: 0.9, ease: EASE_POP });
+      sc.appendChild(cta);
+      // Légère pulsation du bouton, après son apparition
+      anim(cta, [{ filter: 'brightness(1)' }, { filter: 'brightness(1.12)' }, { filter: 'brightness(1)' }],
+        { at: start + 4.8, dur: 1.4, iterations: 2, ease: EASE_IO });
+    }
     stage.appendChild(sc);
   }
 
