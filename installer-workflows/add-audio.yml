@@ -1,0 +1,103 @@
+name: Ajouter la voix off et la musique
+
+# Reprend la vidéo maître (sans audio) de la dernière Release et y mixe les fichiers du dossier audio/.
+# Aucun nouveau rendu des images : environ 1 à 2 minutes.
+on:
+  workflow_dispatch:
+    inputs:
+      generate_music:
+        description: "Ajouter une nappe musicale libre de droits générée automatiquement (si aucun fichier audio/music.* n'existe)"
+        type: boolean
+        default: false
+      voiceover_offset:
+        description: "Mode fichier unique : secondes avant le début de la voix (vide = valeur de la config)"
+        type: string
+        default: ""
+      source_tag:
+        description: "Tag de la Release contenant la vidéo sans audio (vide = la plus récente)"
+        type: string
+        default: ""
+
+permissions:
+  contents: write
+
+jobs:
+  mux:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v7
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+
+      - name: Installer FFmpeg
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg
+          ffmpeg -version | head -1
+
+      - name: Télécharger la vidéo maître (sans audio)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_TAG: ${{ inputs.source_tag }}
+        run: |
+          mkdir -p out
+          if [ -n "$SOURCE_TAG" ]; then
+            gh release download "$SOURCE_TAG" --pattern "gestilys-video-sans-audio.mp4" --dir out || FAIL=1
+          else
+            gh release download --pattern "gestilys-video-sans-audio.mp4" --dir out || FAIL=1
+          fi
+          if [ "${FAIL:-0}" = "1" ] || [ ! -f out/gestilys-video-sans-audio.mp4 ]; then
+            echo "::error::Aucune vidéo maître trouvée. Lancez d'abord « Rendre la publicité Gestilys » avec « publish_release » activé."
+            exit 1
+          fi
+          ls -l out
+
+      - name: Mixer l'audio
+        env:
+          VO_OFFSET: ${{ inputs.voiceover_offset }}
+          GENERATE_MUSIC: ${{ inputs.generate_music && '1' || '0' }}
+        run: bash scripts/mux.sh
+
+      - name: Vérifier les fichiers produits
+        run: |
+          bash scripts/verify.sh out/gestilys-pub-1080x1920.mp4
+          bash scripts/verify.sh out/gestilys-pub-whatsapp.mp4
+
+      - name: Téléchargement direct du MP4 (sans ZIP)
+        continue-on-error: true
+        uses: actions/upload-artifact@v7
+        with:
+          path: out/gestilys-pub-1080x1920.mp4
+          archive: false
+          retention-days: 14
+
+      - name: Archive ZIP de secours
+        uses: actions/upload-artifact@v7
+        with:
+          name: gestilys-video-avec-audio
+          path: |
+            out/gestilys-pub-1080x1920.mp4
+            out/gestilys-pub-whatsapp.mp4
+          compression-level: 0
+          retention-days: 14
+
+      - name: Publier dans une Release GitHub
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_NUMBER: ${{ github.run_number }}
+        run: |
+          TAG="video-audio-${RUN_NUMBER}"
+          gh release create "$TAG" \
+            out/gestilys-pub-1080x1920.mp4 \
+            out/gestilys-pub-whatsapp.mp4 \
+            out/gestilys-video-sans-audio.mp4 \
+            --title "Publicité Gestilys avec audio — n°${RUN_NUMBER}" \
+            --notes "Vidéo maître de la dernière Release + voix off / musique du dossier audio/."
+          URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/tag/${TAG}"
+          echo "### Vidéo avec audio prête" >> "$GITHUB_STEP_SUMMARY"
+          echo "Téléchargement direct (Release) : $URL" >> "$GITHUB_STEP_SUMMARY"
