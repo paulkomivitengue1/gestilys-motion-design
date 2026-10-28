@@ -1,0 +1,30 @@
+/* Gestilys — écran final v2 : carte « essai gratuit » + contact WhatsApp (aucun numéro affiché)
+   Les couleurs viennent de config/video.config.json (variables --navy, --gold…). */
+
+.endcard {
+  position: absolute; left: 80px; right: 80px; top: 810px;
+  background: #fff; border-radius: 52px; padding: 52px 50px 50px; opacity: 0;
+  box-shadow: 0 50px 110px rgba(0, 0, 0, 0.55), 0 0 0 3px rgba(255, 200, 92, 0.55);
+}
+.ec-badge {
+  display: inline-block; background: var(--navy); color: var(--goldLight);
+  font-size: 28px; font-weight: 800; letter-spacing: 5px; text-transform: uppercase;
+  padding: 14px 30px; border-radius: 40px;
+}
+.ec-title { margin-top: 30px; color: var(--navy); font-size: 58px; font-weight: 800; line-height: 1.18; letter-spacing: -1px; }
+.ec-line { white-space: nowrap; }
+.ec-hi {
+  background-image: linear-gradient(transparent 56%, var(--goldLight) 56%, var(--goldLight) 92%, transparent 92%);
+  background-repeat: no-repeat; background-size: 0% 100%;
+  padding: 0 6px; margin: 0 -6px;
+}
+.ec-sep { height: 4px; border-radius: 2px; background: #E1E8F5; margin: 36px 0; transform-origin: 0% 50%; }
+.ec-contact { display: flex; align-items: center; gap: 30px; }
+.ec-ico {
+  width: 104px; height: 104px; border-radius: 50%; background: #25D366; flex: none;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 14px 30px rgba(37, 211, 102, 0.35);
+}
+.ec-ico svg { width: 54px; height: 54px; }
+.ec-text { color: var(--ink); font-size: 40px; font-weight: 700; line-height: 1.25; }
+.ec-text span { display: block; white-space: nowrap; }

@@ -16,6 +16,13 @@
     "descriptor": "Logiciel de gestion scolaire",
     "tagline": "Votre école, mieux organisée.",
     "cta": "Découvrez Gestilys",
+    "ctaCard": {
+      "badge": "Essai gratuit",
+      "lines": ["Profitez de", "7 jours d’essai gratuit", "de Gestilys\u00a0!"],
+      "highlight": 1,
+      "contact": ["Contactez-nous sur WhatsApp", "pour commencer."],
+      "contactDelay": 4.0
+    },
     "disclaimer": "Écrans illustratifs · données fictives"
   },
   "scenes": {
@@ -40,10 +47,10 @@
         { "id": "report", "enabled": true, "kicker": "Bulletins", "title": "Préparez les bulletins scolaires" }
       ]
     },
-    "signature": { "duration": 8 }
+    "signature": { "duration": 14, "ctaAt": 5.4 }
   },
   "audio": {
     "voiceoverOffsetSeconds": 0.6,
-    "voiceoverCues": [0.6, 4.8, 9.6, 13.0, 15.6, 20.2, 24.9, 30.0, 34.0]
+    "voiceoverCues": [0.6, 4.8, 9.6, 13.0, 15.6, 20.2, 24.9, 30.0, 35.0, 38.9]
   }
 }

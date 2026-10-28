@@ -30,7 +30,8 @@ if (preview) {
   const lens = [S.problem.duration, S.transition.duration, S.solution.duration, S.signature.duration];
   const names = ['1-probleme', '2-transition', '3-solution', '4-signature'];
   // plusieurs instants par séquence, pour juger les animations
-  const fractions = [[0.25, 0.55, 0.9], [0.2, 0.55, 0.9], [0.1, 0.3, 0.5, 0.7, 0.9], [0.3, 0.6, 0.95]];
+  // (signature : logo, apparition de la carte d'essai gratuit, titre complet, contact WhatsApp, image finale)
+  const fractions = [[0.25, 0.55, 0.9], [0.2, 0.55, 0.9], [0.1, 0.3, 0.5, 0.7, 0.9], [0.25, 0.45, 0.62, 0.8, 0.96]];
   starts.forEach((s, i) => fractions[i].forEach((f, k) => {
     const t = Math.min(total - 1 / fps, s + lens[i] * f);
     jobs.push({ name: `${names[i]}-${String(k + 1).padStart(2, '0')}-t${t.toFixed(1)}s.png`, t });
