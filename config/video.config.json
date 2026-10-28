@@ -1,0 +1,49 @@
+{
+  "video": { "fps": 30, "width": 1080, "height": 1920 },
+  "colors": {
+    "navy": "#0A1F44",
+    "navyDeep": "#050F26",
+    "navyMid": "#12306A",
+    "white": "#FFFFFF",
+    "mist": "#E9EFFA",
+    "gold": "#F5A623",
+    "goldLight": "#FFC85C",
+    "ink": "#0A1F44",
+    "muted": "#6B7C9E"
+  },
+  "brand": {
+    "name": "Gestilys",
+    "descriptor": "Logiciel de gestion scolaire",
+    "tagline": "Votre école, mieux organisée.",
+    "cta": "Découvrez Gestilys",
+    "disclaimer": "Écrans illustratifs · données fictives"
+  },
+  "scenes": {
+    "problem": {
+      "duration": 9,
+      "headline": ["Gérer une école", "demande du temps", "et de l’organisation."],
+      "accent": ["temps", "organisation"],
+      "notes": ["Registres", "Paiements à relancer", "Bulletins à saisir", "Listes de classe"]
+    },
+    "transition": {
+      "duration": 6,
+      "headline": ["Et si vous simplifiiez", "votre quotidien\u00a0?"],
+      "accent": ["simplifiiez"]
+    },
+    "solution": {
+      "duration": 14,
+      "features": [
+        { "id": "students", "enabled": true, "kicker": "Élèves & classes", "title": "Tous vos élèves, classe par classe" },
+        { "id": "enrollment", "enabled": false, "kicker": "Inscriptions", "title": "Inscrivez vos élèves en quelques étapes" },
+        { "id": "payments", "enabled": true, "kicker": "Paiements", "title": "Suivez les paiements de la scolarité" },
+        { "id": "receipts", "enabled": false, "kicker": "Reçus", "title": "Un reçu pour chaque paiement" },
+        { "id": "report", "enabled": true, "kicker": "Bulletins", "title": "Préparez les bulletins scolaires" }
+      ]
+    },
+    "signature": { "duration": 8 }
+  },
+  "audio": {
+    "voiceoverOffsetSeconds": 0.6,
+    "voiceoverCues": [0.6, 4.8, 9.6, 13.0, 15.6, 20.2, 24.9, 30.0, 34.0]
+  }
+}
