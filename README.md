@@ -3,6 +3,19 @@
 Publicité vidéo verticale (MP4, 9:16, 1080 × 1920, ~37 s) pour **Gestilys**, logiciel de gestion scolaire.
 Tout se fait depuis un téléphone : GitHub dans Chrome, aucun logiciel à installer, coût 0 FCFA.
 
+## Installation (une seule fois, 2 minutes)
+
+Les deux fichiers de workflow GitHub Actions sont dans le dossier `installer-workflows/`. GitHub n'autorise pas l'application Claude à les écrire directement dans `.github/workflows/` : il faut les **déplacer toi-même**, sans rien copier-coller.
+
+Pour **chacun** des deux fichiers (`render-video.yml`, puis `add-audio.yml`) :
+
+1. Ouvre le fichier dans le dépôt (dossier `installer-workflows`).
+2. Touche l'icône **crayon** (Edit). Si elle n'apparaît pas, passe Chrome en **Version pour ordinateur** (menu ⋮ → Version pour ordinateur).
+3. En haut, dans le champ du nom de fichier, remplace `installer-workflows/` par `.github/workflows/` (le chemin final doit être `.github/workflows/render-video.yml`, puis `.github/workflows/add-audio.yml`).
+4. Touche **Commit changes…** puis **Commit changes** (directement sur `main`).
+
+Ensuite, l'onglet **Actions** affiche les deux workflows (si GitHub propose d'activer les workflows, accepte). Tu peux alors supprimer le dossier `installer-workflows/` ou le laisser.
+
 ## Obtenir la vidéo (depuis Chrome sur Android)
 
 1. Ouvre le dépôt sur GitHub → onglet **Actions**.
@@ -17,6 +30,7 @@ Tout se fait depuis un téléphone : GitHub dans Chrome, aucun logiciel à insta
    - `gestilys-pub-whatsapp.mp4` : même vidéo, plus légère pour WhatsApp.
    - `gestilys-video-sans-audio.mp4` : vidéo maître sans audio, réutilisée pour ajouter la voix off plus tard.
 
+Conseil : lance d'abord `mode = apercu` pour vérifier le design en quelques minutes avant le rendu complet.
 Si une étape échoue (croix rouge), ouvre-la : les messages d'erreur sont affichés en clair dans le journal.
 
 ## Modifier textes, couleurs, durées
@@ -74,5 +88,5 @@ scripts/verify.sh             contrôle 1080×1920, H.264, AAC, durée
 scripts/make-music.sh         nappe musicale libre de droits générée (facultative)
 audio/                        voix off et musique à déposer
 voiceover/script.md           texte, minutage et droits de la voix off
-.github/workflows/            rendu complet / aperçu, ajout de l'audio
+installer-workflows/          les 2 workflows à déplacer dans .github/workflows/ (voir Installation)
 ```
