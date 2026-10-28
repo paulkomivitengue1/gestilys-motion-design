@@ -1,11 +1,13 @@
-# Voix off Gestilys — texte, minutage, droits
+# Voix off Gestilys — texte, minutage, droits (version 2 : avec essai gratuit)
 
 Voix souhaitée : homme adulte, chaleureux, posé, professionnel, français impeccable, légère couleur ouest-africaine naturelle (sans caricature).
 Rythme : environ 140 à 150 mots par minute, sans précipitation. Une courte respiration entre les phrases.
 
+> Comment enregistrer avec un téléphone Samsung et ajouter les fichiers au projet : voir `voiceover/guide-enregistrement.md`.
+
 ## Texte définitif (configuration par défaut : élèves, paiements, bulletins)
 
-Durée totale de la vidéo : 37 s. Les instants ci-dessous sont ceux où chaque phrase **commence**. Ils sont déjà dans `config/video.config.json` (`audio.voiceoverCues`).
+Durée totale de la vidéo : 43 s. Les instants ci-dessous sont ceux où chaque phrase **commence**. Ils sont déjà dans `config/video.config.json` (`audio.voiceoverCues`).
 
 | N° | Début | Séquence | Phrase à dire | Durée max. |
 |---|---|---|---|---|
@@ -17,9 +19,12 @@ Durée totale de la vidéo : 37 s. Les instants ci-dessous sont ceux où chaque 
 | 06 | 20,2 s | Paiements | Suivez les paiements de la scolarité. | 3,0 s |
 | 07 | 24,9 s | Bulletins | Préparez les bulletins scolaires, tout au même endroit. | 3,8 s |
 | 08 | 30,0 s | Signature | Gestilys. Votre école, mieux organisée. | 3,0 s |
-| 09 | 34,0 s | Appel à l’action | Découvrez Gestilys. | 1,8 s |
+| 09 | 35,0 s | Écran final (carte « essai gratuit ») | Profitez de 7 jours d’essai gratuit de Gestilys ! | 3,6 s |
+| 10 | 38,9 s | Écran final (contact) | Contactez-nous sur WhatsApp pour commencer. | 3,4 s |
 
-Règle : ne mentionner à la voix que les fonctionnalités réellement disponibles dans Gestilys et affichées à l’écran. Pas de chiffres, pas de promesse de résultats.
+Règle : ne mentionner à la voix que les fonctionnalités réellement disponibles dans Gestilys et affichées à l’écran. Pas de chiffres autres que « 7 jours », pas de promesse de résultats. Aucun numéro de téléphone n’est dit ni affiché dans cette version.
+
+À l’écran, la carte finale apparaît à 34,4 s (titre « Profitez de 7 jours d’essai gratuit de Gestilys ! »), puis la ligne « Contactez-nous sur WhatsApp pour commencer. » apparaît à 38,4 s. La voix démarre donc juste après chaque apparition.
 
 ### Variante si les cinq écrans sont activés (`enabled: true` pour inscriptions et reçus)
 
@@ -33,9 +38,10 @@ Chaque écran dure alors 2,8 s. Remplace les lignes 05 à 07 par :
 | 08 | 23,9 s | Éditez les reçus… |
 | 09 | 26,7 s | et préparez les bulletins. |
 | 10 | 30,0 s | Gestilys. Votre école, mieux organisée. |
-| 11 | 34,0 s | Découvrez Gestilys. |
+| 11 | 35,0 s | Profitez de 7 jours d’essai gratuit de Gestilys ! |
+| 12 | 38,9 s | Contactez-nous sur WhatsApp pour commencer. |
 
-et mets à jour `audio.voiceoverCues` : `[0.6, 4.8, 9.6, 13.0, 15.5, 18.3, 21.1, 23.9, 26.7, 30.0, 34.0]`.
+et mets à jour `audio.voiceoverCues` : `[0.6, 4.8, 9.6, 13.0, 15.5, 18.3, 21.1, 23.9, 26.7, 30.0, 35.0, 38.9]`.
 
 ## Comment fournir la voix (gratuit)
 
@@ -44,7 +50,7 @@ et mets à jour `audio.voiceoverCues` : `[0.6, 4.8, 9.6, 13.0, 15.5, 18.3, 21.1,
 1. Trouve une personne dont la voix correspond (toi-même, un proche, un comédien local, un animateur radio) dans une pièce calme (rideaux, canapé, pas d’écho, pas de ventilateur).
 2. Application **Enregistreur vocal Samsung** (déjà installée), micro à 15–20 cm de la bouche, qualité élevée.
 3. Enregistre **une phrase par fichier**, en laissant 1 seconde de silence avant et après. Refais la prise jusqu’à ce qu’elle sonne naturelle.
-4. Renomme les fichiers : `voiceover-01.m4a`, `voiceover-02.m4a`, … `voiceover-09.m4a` (le numéro correspond au tableau).
+4. Renomme les fichiers : `voiceover-01.m4a`, `voiceover-02.m4a`, … `voiceover-10.m4a` (le numéro correspond au tableau).
 5. Dépose-les dans `audio/` sur GitHub (Add file → Upload files), puis lance le workflow **Ajouter la voix off et la musique**.
 
 Les phrases sont placées automatiquement aux bons instants. Si une phrase est trop longue pour son créneau (durée max. du tableau), reprends la prise un peu plus vite ou ajuste l’instant de la suivante dans la configuration.
