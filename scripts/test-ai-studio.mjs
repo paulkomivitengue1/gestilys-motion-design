@@ -51,7 +51,7 @@ for (let i = 0; i < audioPlan.voice.segments.length; i++) {
   const frequency = 440 + i * 80;
   runShell(`ffmpeg -hide_banner -loglevel error -y -f lavfi -i "sine=frequency=${frequency}:duration=1" -ar 48000 -ac 1 out/ai-studio/audio-test/voiceover-${id}.wav`);
 }
-runShell('scripts/mix-ai-studio-audio.sh', { AI_STUDIO_AUDIO_APPROVED: '1', AI_STUDIO_AUDIO_DIR: 'out/ai-studio/audio-test', AI_STUDIO_GENERATE_MUSIC: '1' });
+runShell('bash scripts/mix-ai-studio-audio.sh', { AI_STUDIO_AUDIO_APPROVED: '1', AI_STUDIO_AUDIO_DIR: 'out/ai-studio/audio-test', AI_STUDIO_GENERATE_MUSIC: '1' });
 const mixed = await readBytes('out/ai-studio/gestilys-video-avec-audio.mp4');
 assert.ok(mixed.length > 100000, 'MP4 avec audio trop petit ou vide.');
 console.log('SELF-TEST OK : scénario + plan visuel + aperçu Chromium + plan audio + mixage FFmpeg vérifiés. Voix de test synthétiques uniquement, aucun appel Gemini.');
