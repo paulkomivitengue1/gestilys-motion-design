@@ -7,7 +7,10 @@
   "scripts": {
     "check": "node scripts/check-config.mjs",
     "render": "node scripts/render.mjs",
-    "preview": "PREVIEW=1 node scripts/render.mjs"
+    "preview": "PREVIEW=1 node scripts/render.mjs",
+    "ai-studio:preview": "AI_STUDIO_APPROVED=1 PREVIEW=1 node scripts/render-approved.mjs",
+    "ai-studio:render": "AI_STUDIO_APPROVED=1 node scripts/render-approved.mjs",
+    "ai-studio:encode": "bash scripts/encode-ai-studio.sh"
   },
   "dependencies": {
     "playwright": "1.49.1"
