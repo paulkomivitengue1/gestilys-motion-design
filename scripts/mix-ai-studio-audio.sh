@@ -44,7 +44,7 @@ FILTER+="${LABELS}amix=inputs=${#FILES[@]}:duration=longest:normalize=0,apad=who
 if [ -n "$MUSIC" ]; then
   ARGS+=(-stream_loop -1 -i "$MUSIC")
   MUSIC_INDEX=$(("${#FILES[@]}"+1))
-  FILTER+=";[$MUSIC_INDEX:a]aresample=48000,aformat=channel_layouts=stereo,volume=0.16,afade=t=in:d=1.2,afade=t=out:st=$((DUR-3)):d=3[bed];[bed][voice]sidechaincompress=threshold=0.035:ratio=5:attack=20:release=500[duck];[duck][voice]amix=inputs=2:duration=longest:normalize=0,alimiter=limit=0.95[aout]"
+  FILTER+=";[voice]asplit=2[side][vox];[$MUSIC_INDEX:a]aresample=48000,aformat=channel_layouts=stereo,volume=0.16,afade=t=in:d=1.2,afade=t=out:st=$((DUR-3)):d=3[bed];[bed][side]sidechaincompress=threshold=0.035:ratio=5:attack=20:release=500[duck];[duck][vox]amix=inputs=2:duration=longest:normalize=0,alimiter=limit=0.95[aout]"
 else
   FILTER+=";[voice]alimiter=limit=0.95[aout]"
 fi
