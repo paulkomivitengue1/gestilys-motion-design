@@ -52,3 +52,30 @@ Le workflow **Gestilys AI Studio — test sans API** vérifie le scénario ficti
 - L'agent audio ne crée pas encore une voix parlée par IA.
 - L'agent réalisateur et l'encodeur MP4 complet doivent encore être validés ensemble sur un rendu final de publicité.
 - Les personnages 3D et la publication sur les réseaux sociaux ne sont pas encore automatisés.
+
+
+## Voix française gratuite avec Piper
+
+AI Studio propose une synthèse vocale locale, sans API payante, sans clé et sans carte bancaire. Elle utilise Piper et le modèle français `fr_FR-siwis-medium`. Le premier lancement télécharge le modèle (environ 63 Mo) et nécessite Python :
+
+```bash
+python3 -m pip install piper-tts==1.5.0
+AI_STUDIO_TTS_APPROVED=1 npm run ai-studio:voice
+```
+
+Les fichiers sont écrits dans `out/ai-studio/piper-audio/`, séparément des enregistrements personnels. Le script ne remplace aucun fichier existant par défaut. Écoutez et validez chaque segment avant le mixage :
+
+```bash
+AI_STUDIO_AUDIO_DIR=out/ai-studio/piper-audio AI_STUDIO_AUDIO_APPROVED=1 npm run ai-studio:audio-mix
+```
+
+**Licence et attribution :** la fiche de `fr_FR-siwis-medium` indique CC BY 4.0 pour le jeu de données et précise un fine-tuning depuis hifi_tts_92 (Hi-Fi TTS, CC BY 4.0). Le script conserve la fiche du modèle dans `VOICE-ATTRIBUTION.txt`. L'attribution et les conditions CC BY 4.0 doivent être respectées. Le moteur Piper est GPL-3.0-or-later et est utilisé comme outil externe. Vérifier la fiche et la chaîne de provenance avant tout usage commercial.
+
+Cette voix n'est pas une voix clonée. N'envoyez aucune donnée personnelle d'élève, parent, enseignant ou école au moteur.
+
+## Limites du mode gratuit
+
+- La voix Piper est réellement générée localement, sans facture par génération ; le modèle doit être téléchargé une première fois.
+- La génération vidéo par modèles ouverts (par exemple Wan) reste exigeante en GPU. Les démonstrations publiques gratuites de Hugging Face ZeroGPU ont des quotas quotidiens, des files d'attente et aucune garantie de disponibilité : elles ne constituent pas encore un moteur de production fiable.
+- En attendant une solution vidéo gratuite stable, le rendu Playwright/Chromium + FFmpeg reste le moteur garanti du projet. Il produit des animations 2D à partir des scènes existantes, pas des personnages 3D générés.
+- Aucun appel Vercel AI Gateway, Veo ou autre API payante n'est requis ni activé dans cette architecture.
