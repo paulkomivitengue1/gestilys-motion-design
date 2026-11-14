@@ -41,9 +41,17 @@ jobs:
           bash -n scripts/verify-ai-studio-audio.sh
       - name: Tester la chaîne complète sans clé API
         run: node scripts/test-ai-studio.mjs
-      - name: Conserver les résultats, aperçu et MP4 de test
+      - name: Conserver les résultats utiles (sans les centaines d'images intermédiaires)
         uses: actions/upload-artifact@v7
         with:
           name: gestilys-ai-studio-self-test
-          path: out/ai-studio/
+          path: |
+            out/ai-studio/proposal.json
+            out/ai-studio/scenario.md
+            out/ai-studio/scene-plan.json
+            out/ai-studio/render-config.json
+            out/ai-studio/audio-plan.json
+            out/ai-studio/preview/*.png
+            out/ai-studio/gestilys-video-sans-audio.mp4
+            out/ai-studio/gestilys-video-avec-audio.mp4
           retention-days: 3
