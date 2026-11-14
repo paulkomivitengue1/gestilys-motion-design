@@ -11,7 +11,7 @@ permissions:
 jobs:
   self-test:
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    timeout-minutes: 15
     steps:
       - name: Récupérer le dépôt
         uses: actions/checkout@v7
@@ -19,14 +19,25 @@ jobs:
         uses: actions/setup-node@v7
         with:
           node-version: "22"
-      - name: Vérifier la syntaxe JavaScript
+      - name: Installer les dépendances du moteur
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y fonts-liberation fonts-noto-core
+          npm install --no-audit --no-fund
+          npx playwright install --with-deps chromium
+          fc-cache -f
+      - name: Vérifier la syntaxe JavaScript et les scripts shell
         run: |
           node --check scripts/generate-brief.mjs
           node --check scripts/plan-scenes.mjs
+          node --check scripts/render.mjs
+          node --check scripts/render-approved.mjs
           node --check scripts/test-ai-studio.mjs
-      - name: Tester le scénariste et l'agent visuel sans clé API
+          bash -n scripts/encode-ai-studio.sh
+          bash -n scripts/verify-ai-studio.sh
+      - name: Tester scénario, plan visuel et aperçu Chromium sans clé API
         run: node scripts/test-ai-studio.mjs
-      - name: Conserver les résultats du test
+      - name: Conserver les résultats et images clés
         uses: actions/upload-artifact@v7
         with:
           name: gestilys-ai-studio-self-test
