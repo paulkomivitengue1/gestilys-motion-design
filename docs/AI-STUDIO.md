@@ -1,41 +1,66 @@
-# Gestilys AI Studio — premier agent
+# Gestilys AI Studio
 
-## Ce que fait cette première version
+## Chaîne actuelle
 
-Le workflow manuel **Gestilys AI Studio — scénario publicitaire** transforme un brief en proposition de scénario en français avec Gemini. Il produit :
+Le projet comporte trois étapes séparées :
 
-- `proposal.json` : proposition structurée à examiner ;
-- `scenario.md` : version lisible du texte et des fonctionnalités retenues.
+1. **Scénariste** — `scripts/generate-brief.mjs` transforme un brief en proposition structurée.
+2. **Agent visuel** — `scripts/plan-scenes.mjs` transforme la proposition en plan de scènes et prépare une configuration de rendu isolée.
+3. **Agent réalisateur** — `scripts/render-approved.mjs` lance le moteur Playwright/Chromium existant pour produire des images ou un aperçu. FFmpeg assemble ensuite les images en MP4.
 
-Le workflow ne modifie jamais `config/video.config.json`, ne lance pas le rendu vidéo et ne publie rien. Toute proposition porte le statut `DRAFT_REQUIRES_HUMAN_APPROVAL`.
+Les sorties IA sont des brouillons et ne sont jamais publiées automatiquement.
 
-## Configuration (une seule fois)
+## Fichiers produits
 
-1. Dans Google AI Studio, crée une clé Gemini API : https://aistudio.google.com/apikey
-2. Dans GitHub, ouvre **Settings → Secrets and variables → Actions → New repository secret**.
-3. Nom : `GEMINI_API_KEY`. Valeur : la clé API. Ne la place jamais dans un fichier, le brief ou une conversation.
-4. Enregistre le secret.
+Dans `out/ai-studio/` :
 
-Le modèle est configurable dans le formulaire du workflow. Le modèle par défaut peut être remplacé si Google le retire ou le renomme.
+- `proposal.json` et `scenario.md` : scénario proposé ;
+- `scene-plan.json` : séquençage et indications visuelles ;
+- `render-config.json` : copie de configuration dédiée à ce rendu ;
+- `preview/` : images clés de l'aperçu ;
+- `frames/` : images du rendu complet ;
+- `gestilys-video-sans-audio.mp4` : vidéo assemblée, sans piste audio.
 
-## Lancer un scénario
+La configuration de production `config/video.config.json`, les rendus historiques et les Releases ne sont pas écrasés par ces scripts.
 
-1. Ouvre l'onglet **Actions** du dépôt.
-2. Choisis **Gestilys AI Studio — scénario publicitaire** puis **Run workflow**.
-3. Écris un brief précis : public visé, problème, objectif, ton et fonctionnalités à présenter.
-4. Lance le workflow.
-5. Télécharge l'artefact `gestilys-ai-studio-proposition` et relis `scenario.md` et `proposal.json`.
+## Tester sans clé API
 
-## Garde-fous
+Le workflow **Gestilys AI Studio — test sans API** s'exécute sur les pushes de la branche `ai-studio-foundation`. Il utilise une réponse fictive locale, vérifie les garde-fous et rend un aperçu Chromium. Aucun appel Gemini n'est effectué.
 
-- Liste blanche des fonctionnalités activées dans `config/video.config.json` : l'IA ne peut pas activer une fonctionnalité désactivée.
-- Refus des identifiants de fonctionnalités inconnus ou répétés.
-- Durée proposée contrôlée entre 25 et 30 secondes.
-- La configuration de rendu existante n'est jamais écrasée.
-- Validation humaine obligatoire avant toute intégration au rendu ou publication.
-- N'envoyez aucune donnée personnelle d'élève, parent, enseignant ou école. Les briefs doivent rester génériques.
-- L'offre gratuite de fournisseurs IA peut avoir des limites et des conditions d'utilisation spécifiques ; vérifiez-les avant usage commercial.
+## Utilisation réelle de Gemini
+
+La génération par Gemini est facultative pour les tests du moteur. Si elle est activée, la clé doit être créée et gérée par une personne autorisée selon les conditions Google applicables. Google AI Studio et Gemini API imposent notamment une condition d'âge minimale de 18 ans. La personne responsable doit consulter les conditions officielles avant toute utilisation : https://aistudio.google.com/docs/terms
+
+La clé ne doit jamais être commitée, copiée dans un brief ou partagée dans une conversation. Elle doit uniquement être enregistrée comme secret GitHub Actions sous le nom `GEMINI_API_KEY`, par la personne responsable. Ne transmettez aucune donnée personnelle d'élève, parent, enseignant ou école au modèle.
+
+## Rendu avec validation humaine
+
+Le réalisateur refuse de démarrer sans `AI_STUDIO_APPROVED=1`. Cette variable doit être définie explicitement après examen du scénario et du plan visuel.
+
+Aperçu :
+
+```bash
+AI_STUDIO_APPROVED=1 PREVIEW=1 node scripts/render-approved.mjs
+```
+
+Rendu complet :
+
+```bash
+AI_STUDIO_APPROVED=1 node scripts/render-approved.mjs
+bash scripts/encode-ai-studio.sh
+```
+
+Vérification :
+
+```bash
+bash scripts/verify-ai-studio.sh
+```
+
+Le rendu complet et l'encodage restent isolés dans `out/ai-studio/`. La vidéo produite est sans audio ; le mixage voix/musique est un jalon distinct. Les interfaces affichées dans la publicité sont illustratives et doivent rester identifiées comme telles si elles ne sont pas des captures réelles de l'application.
 
 ## Limites actuelles
 
-C'est le premier agent (brief → scénario contrôlé), pas encore un réalisateur autonome. Il ne crée pas encore les personnages, les voix, la musique ou le MP4. L'intégration au moteur Playwright/FFmpeg sera un jalon séparé, après validation de la qualité des scénarios.
+- Le mode de test utilise une proposition fictive ; il ne valide pas encore la qualité des scénarios générés par Gemini.
+- L'aperçu Chromium vérifie le rendu des images clés, pas encore le MP4 complet.
+- Le rendu complet, le mixage d'une voix française et la vérification audio devront être testés séparément avant toute utilisation commerciale.
+- Aucune publication sur les réseaux sociaux n'est automatique.
