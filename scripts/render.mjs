@@ -10,7 +10,8 @@ import { resolve, join } from 'node:path';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 
 const root = resolve(fileURLToPath(new URL('.', import.meta.url)), '..');
-const cfg = JSON.parse(readFileSync(join(root, 'config', 'video.config.json'), 'utf8'));
+const configPath = process.env.VIDEO_CONFIG_PATH ? resolve(root, process.env.VIDEO_CONFIG_PATH) : join(root, 'config', 'video.config.json');
+const cfg = JSON.parse(readFileSync(configPath, 'utf8'));
 const { fps, width, height } = cfg.video;
 const preview = process.env.PREVIEW === '1';
 const workers = Math.max(1, Math.min(8, parseInt(process.env.WORKERS || '4', 10) || 4));
@@ -19,7 +20,7 @@ const S = cfg.scenes;
 const total = S.problem.duration + S.transition.duration + S.solution.duration + S.signature.duration;
 const totalFrames = Math.round(total * fps);
 
-const outDir = join(root, preview ? 'out/preview' : 'frames');
+const outDir = process.env.FRAMES_DIR ? resolve(root, process.env.FRAMES_DIR) : join(root, preview ? 'out/preview' : 'frames');
 if (existsSync(outDir)) rmSync(outDir, { recursive: true, force: true });
 mkdirSync(outDir, { recursive: true });
 
