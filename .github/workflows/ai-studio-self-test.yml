@@ -11,7 +11,7 @@ permissions:
 jobs:
   self-test:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 35
     steps:
       - name: Récupérer le dépôt
         uses: actions/checkout@v7
@@ -32,15 +32,16 @@ jobs:
           node --check scripts/plan-scenes.mjs
           node --check scripts/render.mjs
           node --check scripts/render-approved.mjs
+          node --check scripts/run-ai-studio.mjs
           node --check scripts/create-audio-plan.mjs
           node --check scripts/test-ai-studio.mjs
           bash -n scripts/encode-ai-studio.sh
           bash -n scripts/verify-ai-studio.sh
           bash -n scripts/mix-ai-studio-audio.sh
           bash -n scripts/verify-ai-studio-audio.sh
-      - name: Tester scénario, plan visuel et aperçu Chromium sans clé API
+      - name: Tester la chaîne complète sans clé API
         run: node scripts/test-ai-studio.mjs
-      - name: Conserver les résultats et images clés
+      - name: Conserver les résultats, aperçu et MP4 de test
         uses: actions/upload-artifact@v7
         with:
           name: gestilys-ai-studio-self-test
