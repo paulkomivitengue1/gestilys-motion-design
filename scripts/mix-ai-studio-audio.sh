@@ -40,7 +40,7 @@ for i in "${!FILES[@]}"; do
   FILTER+="[$((i+1)):a]aresample=48000,aformat=channel_layouts=stereo,loudnorm=I=-16:TP=-1.5:LRA=11,adelay=$MS|$MS[v$i];"
   LABELS+="[v$i]"
 done
-FILTER+="${LABELS}amix=inputs=${#FILES[@]} :duration=longest:normalize=0,apad=whole_dur=$DUR,atrim=0:$DUR[voice]"
+FILTER+="${LABELS}amix=inputs=${#FILES[@]}:duration=longest:normalize=0,apad=whole_dur=$DUR,atrim=0:$DUR[voice]"
 if [ -n "$MUSIC" ]; then
   ARGS+=(-stream_loop -1 -i "$MUSIC")
   MUSIC_INDEX=$(("${#FILES[@]}"+1))
