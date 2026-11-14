@@ -20,8 +20,11 @@ jobs:
         with:
           node-version: "22"
       - name: Vérifier la syntaxe JavaScript
-        run: node --check scripts/generate-brief.mjs && node --check scripts/test-ai-studio.mjs
-      - name: Tester le scénariste sans clé API
+        run: |
+          node --check scripts/generate-brief.mjs
+          node --check scripts/plan-scenes.mjs
+          node --check scripts/test-ai-studio.mjs
+      - name: Tester le scénariste et l'agent visuel sans clé API
         run: node scripts/test-ai-studio.mjs
       - name: Conserver les résultats du test
         uses: actions/upload-artifact@v7
