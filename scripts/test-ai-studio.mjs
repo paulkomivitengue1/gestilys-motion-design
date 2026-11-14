@@ -4,13 +4,14 @@ import assert from 'node:assert/strict';
 const configPath = new URL('../config/video.config.json', import.meta.url);
 const before = await readFile(configPath, 'utf8');
 const env = { ...process.env, AI_STUDIO_SELF_TEST: '1', AD_BRIEF: 'Test fictif sans données réelles : présenter Gestilys aux directions d’écoles privées.' };
-function run(script) {
-  const result = spawnSync(process.execPath, [script], { encoding: 'utf8', env });
+function run(script, extraEnv = {}) {
+  const result = spawnSync(process.execPath, [script], { encoding: 'utf8', env: { ...env, ...extraEnv } });
   if (result.status !== 0) { process.stderr.write(result.stderr || result.stdout); process.exit(result.status || 1); }
   return result.stdout;
 }
 run('scripts/generate-brief.mjs');
 run('scripts/plan-scenes.mjs');
+run('scripts/render-approved.mjs', { AI_STUDIO_APPROVED: '1', PREVIEW: '1' });
 assert.equal(await readFile(configPath, 'utf8'), before, 'La configuration source a été modifiée.');
 const proposal = JSON.parse(await readFile('out/ai-studio/proposal.json', 'utf8'));
 assert.equal(proposal.status, 'DRAFT_REQUIRES_HUMAN_APPROVAL');
@@ -26,4 +27,9 @@ assert.deepEqual(renderConfig.scenes.solution.features.filter(f => f.enabled).ma
 assert.ok(plan.scenes.some(scene => scene.type === 'existing-ui-animation'));
 assert.ok(plan.safeguards.some(item => item.includes('Validation humaine') || item.includes('Validation')));
 assert.match(await readFile('out/ai-studio/scenario.md', 'utf8'), /brouillon à valider humainement/i);
-console.log('SELF-TEST OK : scénario + plan visuel + configuration de rendu validés. Source intacte, aucun appel Gemini, aucun rendu.');
+const { readdir, readFile: readBytes } = await import('node:fs/promises');
+const previewFiles = (await readdir('out/ai-studio/preview')).filter(name => name.endsWith('.png'));
+assert.ok(previewFiles.length >= 12, 'L’aperçu doit contenir au moins 12 images clés.');
+const png = await readBytes('out/ai-studio/preview/' + previewFiles[0]);
+assert.equal(png.subarray(0, 8).toString('hex'), '89504e470d0a1a0a', 'Le fichier aperçu n’est pas un PNG valide.');
+console.log('SELF-TEST OK : scénario + plan visuel + aperçu Chromium rendus. Source intacte, aucun appel Gemini, aucun rendu vidéo complet.');
