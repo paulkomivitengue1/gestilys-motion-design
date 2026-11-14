@@ -2,10 +2,11 @@
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
 
 const brief = process.env.AD_BRIEF?.trim();
+const selfTest = process.env.AI_STUDIO_SELF_TEST === '1';
 const apiKey = process.env.GEMINI_API_KEY;
-const model = process.env.GEMINI_MODEL?.trim() || 'gemini-2.5-flash';
+const model = selfTest ? 'mock-self-test' : (process.env.GEMINI_MODEL?.trim() || 'gemini-2.5-flash');
 if (!brief) throw new Error('Brief manquant : renseignez AD_BRIEF.');
-if (!apiKey) throw new Error('Secret GEMINI_API_KEY absent. Ajoutez-le dans Settings > Secrets and variables > Actions.');
+if (!selfTest && !apiKey) throw new Error('Secret GEMINI_API_KEY absent. Ajoutez-le dans Settings > Secrets and variables > Actions.');
 if (brief.length > 6000) throw new Error('Brief trop long : 6 000 caractères maximum.');
 
 const config = JSON.parse(await readFile(new URL('../config/video.config.json', import.meta.url), 'utf8'));
@@ -36,23 +37,41 @@ Brief :
 ${brief}
 `;
 const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
-const response = await fetch(endpoint, {
-  method: 'POST',
-  headers: { 'content-type': 'application/json', 'x-goog-api-key': apiKey },
-  body: JSON.stringify({
-    contents: [{ role: 'user', parts: [{ text: prompt }] }],
-    generationConfig: { responseMimeType: 'application/json', temperature: 0.55 }
-  })
-});
-if (!response.ok) {
-  const detail = (await response.text()).slice(0, 1200);
-  throw new Error(`Gemini API ${response.status}: ${detail}`);
-}
-const payload = await response.json();
-const raw = payload.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('').trim();
-if (!raw) throw new Error('Gemini n’a retourné aucun contenu exploitable.');
 let draft;
-try { draft = JSON.parse(raw); } catch { throw new Error('La réponse IA n’est pas un JSON valide.'); }
+if (selfTest) {
+  const firstAllowed = allowed[0];
+  if (!firstAllowed) throw new Error('Aucune fonctionnalité activée pour le test.');
+  draft = {
+    brand: { tagline: 'Votre école, mieux organisée.', cta: 'Demandez une démonstration' },
+    problem: { headline: ['La gestion scolaire prend du temps'], notes: ['Listes', 'Suivi administratif'] },
+    transition: { headline: ['Simplifiez votre quotidien'] },
+    features: [{ id: firstAllowed.id, kicker: firstAllowed.kicker, title: firstAllowed.title }],
+    voiceover: [
+      { scene: 'problem', text: 'La gestion quotidienne demande du temps.' },
+      { scene: 'solution', text: 'Gestilys rassemble vos outils de gestion scolaire.' },
+      { scene: 'cta', text: 'Demandez une démonstration.' }
+    ],
+    duration_seconds: 28,
+    rationale: 'Fixture locale de test : aucune réponse IA réelle.'
+  };
+} else {
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-goog-api-key': apiKey },
+    body: JSON.stringify({
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      generationConfig: { responseMimeType: 'application/json', temperature: 0.55 }
+    })
+  });
+  if (!response.ok) {
+    const detail = (await response.text()).slice(0, 1200);
+    throw new Error(`Gemini API ${response.status}: ${detail}`);
+  }
+  const payload = await response.json();
+  const raw = payload.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('').trim();
+  if (!raw) throw new Error('Gemini n’a retourné aucun contenu exploitable.');
+  try { draft = JSON.parse(raw); } catch { throw new Error('La réponse IA n’est pas un JSON valide.'); }
+}
 
 const fail = message => { throw new Error(`Proposition refusée : ${message}`); };
 if (!draft.brand || typeof draft.brand.tagline !== 'string' || typeof draft.brand.cta !== 'string') fail('brand incomplet');
