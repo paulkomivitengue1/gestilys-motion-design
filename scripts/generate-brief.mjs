@@ -103,6 +103,7 @@ const proposal = {
   model,
   brief,
   status: 'DRAFT_REQUIRES_HUMAN_APPROVAL',
+  selected_feature_ids: draft.features.map(f => f.id),
   duration_seconds: draft.duration_seconds,
   rationale: String(draft.rationale || ''),
   config_changes: {
