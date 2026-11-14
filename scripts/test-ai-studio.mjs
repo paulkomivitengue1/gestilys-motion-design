@@ -10,7 +10,7 @@ function run(script, extraEnv = {}) {
   return result.stdout;
 }
 function runShell(script, extraEnv = {}) {
-  const result = spawnSync('bash', [script], { encoding: 'utf8', env: { ...env, ...extraEnv } });
+  const result = spawnSync('bash', ['-lc', script], { encoding: 'utf8', env: { ...env, ...extraEnv } });
   if (result.status !== 0) { process.stderr.write(result.stderr || result.stdout); process.exit(result.status || 1); }
   return result.stdout;
 }
