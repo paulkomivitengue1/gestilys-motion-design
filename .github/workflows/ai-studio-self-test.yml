@@ -34,6 +34,7 @@ jobs:
           node --check scripts/render-approved.mjs
           node --check scripts/run-ai-studio.mjs
           node --check scripts/create-audio-plan.mjs
+          node --check scripts/generate-voice-piper.mjs
           node --check scripts/test-ai-studio.mjs
           bash -n scripts/encode-ai-studio.sh
           bash -n scripts/verify-ai-studio.sh
