@@ -2,65 +2,53 @@
 
 ## Chaîne actuelle
 
-Le projet comporte trois étapes séparées :
+1. **Scénariste** — transforme un brief en proposition structurée.
+2. **Agent visuel** — crée un plan de scènes et une configuration isolée.
+3. **Agent réalisateur** — utilise Playwright/Chromium et FFmpeg pour créer les images et le MP4 sans audio.
+4. **Agent audio** — transforme le texte en plan de synchronisation, puis mixe des voix enregistrées et une musique avec FFmpeg.
 
-1. **Scénariste** — `scripts/generate-brief.mjs` transforme un brief en proposition structurée.
-2. **Agent visuel** — `scripts/plan-scenes.mjs` transforme la proposition en plan de scènes et prépare une configuration de rendu isolée.
-3. **Agent réalisateur** — `scripts/render-approved.mjs` lance le moteur Playwright/Chromium existant pour produire des images ou un aperçu. FFmpeg assemble ensuite les images en MP4.
+Chaque étape produit des fichiers séparés dans `out/ai-studio/`. Aucune publication n'est automatique.
 
-Les sorties IA sont des brouillons et ne sont jamais publiées automatiquement.
+## Audio : fonctionnement
 
-## Fichiers produits
-
-Dans `out/ai-studio/` :
-
-- `proposal.json` et `scenario.md` : scénario proposé ;
-- `scene-plan.json` : séquençage et indications visuelles ;
-- `render-config.json` : copie de configuration dédiée à ce rendu ;
-- `preview/` : images clés de l'aperçu ;
-- `frames/` : images du rendu complet ;
-- `gestilys-video-sans-audio.mp4` : vidéo assemblée, sans piste audio.
-
-La configuration de production `config/video.config.json`, les rendus historiques et les Releases ne sont pas écrasés par ces scripts.
-
-## Tester sans clé API
-
-Le workflow **Gestilys AI Studio — test sans API** s'exécute sur les pushes de la branche `ai-studio-foundation`. Il utilise une réponse fictive locale, vérifie les garde-fous et rend un aperçu Chromium. Aucun appel Gemini n'est effectué.
-
-## Utilisation réelle de Gemini
-
-La génération par Gemini est facultative pour les tests du moteur. Si elle est activée, la clé doit être créée et gérée par une personne autorisée selon les conditions Google applicables. Google AI Studio et Gemini API imposent notamment une condition d'âge minimale de 18 ans. La personne responsable doit consulter les conditions officielles avant toute utilisation : https://aistudio.google.com/docs/terms
-
-La clé ne doit jamais être commitée, copiée dans un brief ou partagée dans une conversation. Elle doit uniquement être enregistrée comme secret GitHub Actions sous le nom `GEMINI_API_KEY`, par la personne responsable. Ne transmettez aucune donnée personnelle d'élève, parent, enseignant ou école au modèle.
-
-## Rendu avec validation humaine
-
-Le réalisateur refuse de démarrer sans `AI_STUDIO_APPROVED=1`. Cette variable doit être définie explicitement après examen du scénario et du plan visuel.
-
-Aperçu :
+Après génération du scénario et du plan visuel :
 
 ```bash
-AI_STUDIO_APPROVED=1 PREVIEW=1 node scripts/render-approved.mjs
+npm run ai-studio:audio-plan
 ```
 
-Rendu complet :
+Le fichier `out/ai-studio/audio-plan.json` indique le texte de chaque phrase, son instant de départ et le nom du fichier audio attendu.
+
+Fournissez les enregistrements autorisés dans `audio/ai-studio/` :
+
+- `voiceover-01.wav`
+- `voiceover-02.wav`
+- etc., selon le plan audio ;
+- facultativement `music.mp3`, `music.wav`, `music.m4a` ou `music.ogg`.
+
+Si aucune musique n'est fournie, FFmpeg peut générer une nappe instrumentale originale :
 
 ```bash
-AI_STUDIO_APPROVED=1 node scripts/render-approved.mjs
-bash scripts/encode-ai-studio.sh
+AI_STUDIO_AUDIO_APPROVED=1 AI_STUDIO_GENERATE_MUSIC=1 npm run ai-studio:audio-mix
 ```
 
-Vérification :
+Pour mixer avec une musique fournie, omettez `AI_STUDIO_GENERATE_MUSIC`. La sortie est `out/ai-studio/gestilys-video-avec-audio.mp4`.
 
-```bash
-bash scripts/verify-ai-studio.sh
-```
+Le mixeur exige `AI_STUDIO_AUDIO_APPROVED=1`. Il refuse de fonctionner si un enregistrement attendu manque. Il baisse la musique sous la voix, synchronise les segments et ajoute une piste AAC. Le fichier source sans audio n'est pas modifié.
 
-Le rendu complet et l'encodage restent isolés dans `out/ai-studio/`. La vidéo produite est sans audio ; le mixage voix/musique est un jalon distinct. Les interfaces affichées dans la publicité sont illustratives et doivent rester identifiées comme telles si elles ne sont pas des captures réelles de l'application.
+## Voix synthétique et droits
 
-## Limites actuelles
+Cette version ne génère pas encore une voix humaine par IA. Elle prépare les textes et synchronise les enregistrements fournis. Utilisez uniquement une voix enregistrée avec consentement ou une voix synthétique dont les conditions autorisent explicitement l'usage commercial et publicitaire. Ne clonez pas la voix d'une personne sans son accord. Ne partagez aucune donnée personnelle d'élève, parent, enseignant ou école.
 
-- Le mode de test utilise une proposition fictive ; il ne valide pas encore la qualité des scénarios générés par Gemini.
-- L'aperçu Chromium vérifie le rendu des images clés, pas encore le MP4 complet.
-- Le rendu complet, le mixage d'une voix française et la vérification audio devront être testés séparément avant toute utilisation commerciale.
-- Aucune publication sur les réseaux sociaux n'est automatique.
+La génération de voix par un fournisseur externe sera étudiée séparément, après vérification des conditions d'âge, des droits et des coûts. Aucun secret API n'est requis pour les tests actuels.
+
+## Tests sans API
+
+Le workflow **Gestilys AI Studio — test sans API** vérifie le scénario fictif, le plan visuel, l'aperçu Chromium, le plan audio et le mixage FFmpeg. Les fichiers vocaux du test sont des tonalités synthétiques, pas une voix humaine. Le test ne valide donc pas encore la qualité d'une vraie voix off.
+
+## Limites restantes
+
+- Le test audio utilise des tonalités synthétiques, pas les voix finales.
+- L'agent audio ne crée pas encore une voix parlée par IA.
+- L'agent réalisateur et l'encodeur MP4 complet doivent encore être validés ensemble sur un rendu final de publicité.
+- Les personnages 3D et la publication sur les réseaux sociaux ne sont pas encore automatisés.
