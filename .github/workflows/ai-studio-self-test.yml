@@ -1,0 +1,31 @@
+name: Gestilys AI Studio — test sans API
+
+on:
+  push:
+    branches:
+      - ai-studio-foundation
+
+permissions:
+  contents: read
+
+jobs:
+  self-test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v7
+      - name: Installer Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+      - name: Vérifier la syntaxe JavaScript
+        run: node --check scripts/generate-brief.mjs && node --check scripts/test-ai-studio.mjs
+      - name: Tester le scénariste sans clé API
+        run: node scripts/test-ai-studio.mjs
+      - name: Conserver les résultats du test
+        uses: actions/upload-artifact@v7
+        with:
+          name: gestilys-ai-studio-self-test
+          path: out/ai-studio/
+          retention-days: 3
