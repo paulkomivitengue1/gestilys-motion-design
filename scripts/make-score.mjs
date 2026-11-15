@@ -9,8 +9,7 @@ const bpm=112,beat=60/bpm,bar=beat*4;
 const hz=n=>440*Math.pow(2,(n-69)/12);
 const clamp=(v,a=-1,b=1)=>Math.max(a,Math.min(b,v));
 const noise=n=>{const x=Math.sin(n*127.1+311.7)*43758.5453123;return (x-Math.floor(x))*2-1;};
-function put(at,fn,pan=0){const start=Math.max(0,Math.floor(at*sr)),len=Math.min(frames-start,Math.ceil(fn.length*sr));for(let j=0;j<len;j++){const v=fn(j/sr,j)*Math.sqrt(1-pan*pan);L[start+j]+=v*Math.sqrt((1-pan)*.5);R[start+j]+=v*Math.sqrt((1+pan)*.5);}}
-function tone(at,freq,amp,decay,partials=[1,.25,.08],pan=0){put(at,{length:decay},pan);const start=Math.floor(at*sr),len=Math.min(frames-start,Math.floor(decay*sr));for(let j=0;j<len;j++){const t=j/sr,e=Math.pow(1-j/len,2.2),v=partials.reduce((s,p,k)=>s+p*Math.sin(2*Math.PI*freq*(k+1)*t),0)*amp*e;const i=start+j;L[i]+=v*Math.sqrt((1-pan)*.5);R[i]+=v*Math.sqrt((1+pan)*.5);}}
+function tone(at,freq,amp,decay,partials=[1,.25,.08],pan=0){const start=Math.floor(at*sr),len=Math.min(frames-start,Math.floor(decay*sr));for(let j=0;j<len;j++){const t=j/sr,e=Math.pow(1-j/len,2.2),v=partials.reduce((s,p,k)=>s+p*Math.sin(2*Math.PI*freq*(k+1)*t),0)*amp*e;const i=start+j;L[i]+=v*Math.sqrt((1-pan)*.5);R[i]+=v*Math.sqrt((1+pan)*.5);}}
 function kick(at,amp=1){const start=Math.floor(at*sr),len=Math.floor(.34*sr);for(let j=0;j<len&&start+j<frames;j++){const t=j/sr,phase=2*Math.PI*(48*t+34*(1-Math.exp(-t*23))/23),v=Math.sin(phase)*Math.exp(-t*13)*amp*.56;L[start+j]+=v;R[start+j]+=v;}}
 function snare(at,amp=.7){const start=Math.floor(at*sr),len=Math.floor(.19*sr);for(let j=0;j<len&&start+j<frames;j++){const t=j/sr,n=noise(j+Math.floor(at*sr)*7),v=(n*.75*Math.exp(-t*24)+Math.sin(2*Math.PI*185*t)*Math.exp(-t*19)*.25)*amp*.24;L[start+j]+=v;R[start+j]+=v;}}
 function hat(at,amp=.16){const start=Math.floor(at*sr),len=Math.floor(.045*sr);for(let j=0;j<len&&start+j<frames;j++){const t=j/sr,v=noise(j+Math.floor(at*sr)*13)*Math.exp(-t*105)*amp;L[start+j]+=v*.72;R[start+j]+=v*.78;}}
