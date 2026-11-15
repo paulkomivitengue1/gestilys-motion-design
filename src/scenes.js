@@ -149,7 +149,7 @@ function drawDashboard(c,t,start) {
   c.beginPath();c.arc(80,451,8,0,Math.PI*2);c.fillStyle=LIGHT;c.fill();label(c,'GESTILYS',100,458,19,'#fff',850,'left',1.8);c.strokeStyle='rgba(255,255,255,.18)';c.beginPath();c.moveTo(220,437);c.lineTo(220,468);c.stroke();label(c,'Tableau de bord',244,458,18,'rgba(255,255,255,.83)',600);
   label(c,'ÉCOLE · EXEMPLE',847,455,12,'#cbd6df',800,'right',1.3);c.beginPath();c.arc(960,451,18,0,Math.PI*2);c.fillStyle='#d9b66d';c.fill();label(c,'A',960,457,15,'#1e3042',850,'center');
   // Nav rail
-  c.fillStyle='#e8edf1';c.fillRect(48,489,164,968);box(c,104,520,50,50,14,'#152b43');label(c,'G',129,556,31,LIGHT,600,'center',0,'Georgia');
+  c.fillStyle='#e8edf1';c.fillRect(48,489,164,968);drawLogo(c,129,545,46,1);
   const nav=[['Vue d’ensemble','overview'],['Élèves & classes','people'],['Paiements','pay'],['Bulletins','report']];nav.forEach((a,i)=>{const y=609+i*69;if(i===0)box(c,60,y-29,142,50,8,'#152b43');uiIcon(c,a[1],69,y-16,i===0?LIGHT:'#81909d');label(c,a[0],107,y+1,12,i===0?'#fff':'#5b6b7b',700);});
   label(c,'ANNÉE SCOLAIRE',67,1383,10,'#84919d',800,'left',1);label(c,'2025 — 2026',67,1404,12,'#536575',750);
   // Dashboard content
@@ -179,10 +179,15 @@ function drawProduct(c,t,cfg) {
   beam(c,1710,t,18.2,.75);
 }
 function drawLogo(c,x,y,size,progress=1) {
-  c.save();const grad=c.createLinearGradient(x-size/2,y-size/2,x+size/2,y+size/2);grad.addColorStop(0,'#f6d68f');grad.addColorStop(.55,'#d9a64e');grad.addColorStop(1,'#a9762d');
-  shadow(c,54,'rgba(217,166,78,.32)',22);box(c,x-size/2,y-size/2,size,size,size*.25,grad,'rgba(255,243,216,.62)',1);c.shadowColor='transparent';
-  c.beginPath();c.arc(x,y,size*.29,-Math.PI*.82,Math.PI*1.82);c.strokeStyle=`rgba(255,253,246,${progress})`;c.lineWidth=size*.082;c.lineCap='round';c.stroke();
-  c.beginPath();c.moveTo(x+size*.29,y);c.lineTo(x+size*.03,y);c.stroke();c.restore();
+  // Reproduction Canvas du composant officiel src/components/Logo.tsx de Gestilys.
+  c.save();c.translate(x-size/2,y-size/2);c.scale(size/64,size/64);
+  const grad=c.createLinearGradient(0,0,64,64);grad.addColorStop(0,'#1E3A8A');grad.addColorStop(1,'#1e2d6e');
+  c.beginPath();c.moveTo(32,3);c.lineTo(57,13);c.lineTo(57,32);c.bezierCurveTo(57,49,45.5,57.5,32,61.5);c.bezierCurveTo(18.5,57.5,7,49,7,32);c.lineTo(7,13);c.closePath();
+  shadow(c,8,'rgba(30,58,138,.28)',3);c.fillStyle=grad;c.fill();c.shadowColor='transparent';
+  c.beginPath();c.moveTo(20,22);c.bezierCurveTo(24,19.5,28,19.5,32,21.5);c.bezierCurveTo(36,19.5,40,19.5,44,22);c.lineTo(44,40);c.bezierCurveTo(40,37.5,36,37.5,32,39.5);c.bezierCurveTo(28,37.5,24,37.5,20,40);c.closePath();c.fillStyle='rgba(255,255,255,.96)';c.fill();
+  c.beginPath();c.moveTo(32,21.5);c.lineTo(32,39.5);c.strokeStyle='rgba(30,58,138,.5)';c.lineWidth=1.4;c.stroke();
+  c.beginPath();c.moveTo(25.5,49);c.lineTo(30,53.5);c.lineTo(38,44.5);c.strokeStyle=`rgba(217,119,6,${progress})`;c.lineWidth=3.4;c.lineCap='round';c.lineJoin='round';c.stroke();
+  c.restore();
 }
 function drawIdentity(c,t,cfg) {
   const start=19;bg(c,t,870,.44);particleField(c,t,239,76,1740);rings(c,540,846,505,t,.92);
