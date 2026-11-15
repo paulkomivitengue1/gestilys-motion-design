@@ -17,7 +17,8 @@ export function text(ctx,value,x,y,{size=64,weight=800,color='#fff',align='cente
 export function drawDirector(ctx,t,progress=1){
   ctx.save();
   const reveal=clamp(progress);
-  const breath=Math.sin(t*1.8)*3,gesture=Math.sin(t*1.35+.4)*13;\n  ctx.translate(540+Math.sin(t*.72)*5,1360+breath);
+  const breath=Math.sin(t*1.8)*3,gesture=Math.sin(t*1.35+.4)*13;
+  ctx.translate(540+Math.sin(t*.72)*5,1360+breath);
   // Ombre douce au sol
   ctx.fillStyle='rgba(0,0,0,.30)';ctx.beginPath();ctx.ellipse(0,310,235,30,0,0,Math.PI*2);ctx.fill();
   // Buste : veste de direction avec volumes et plis
