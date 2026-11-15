@@ -17,7 +17,7 @@ export function text(ctx,value,x,y,{size=64,weight=800,color='#fff',align='cente
 export function drawDirector(ctx,t,progress=1){
   ctx.save();
   const reveal=clamp(progress);
-  ctx.translate(540,1360+Math.sin(t*1.8)*3);
+  const breath=Math.sin(t*1.8)*3,gesture=Math.sin(t*1.35+.4)*13;\n  ctx.translate(540+Math.sin(t*.72)*5,1360+breath);
   // Ombre douce au sol
   ctx.fillStyle='rgba(0,0,0,.30)';ctx.beginPath();ctx.ellipse(0,310,235,30,0,0,Math.PI*2);ctx.fill();
   // Buste : veste de direction avec volumes et plis
@@ -52,10 +52,10 @@ export function drawDirector(ctx,t,progress=1){
   ctx.strokeStyle='#854c3d';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(-28,-121);ctx.quadraticCurveTo(0,-111+Math.sin(t*4)*2,28,-121);ctx.stroke();
   ctx.strokeStyle='rgba(255,211,185,.55)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-18,-132);ctx.quadraticCurveTo(0,-126,18,-132);ctx.stroke();
   // Bras articulés et mains visibles autour de la tablette
-  ctx.strokeStyle='#1c4265';ctx.lineWidth=58;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(-128,75);ctx.quadraticCurveTo(-210,151,-120,232);ctx.moveTo(128,75);ctx.quadraticCurveTo(210,151,120,232);ctx.stroke();
-  ctx.fillStyle='#b97858';ctx.beginPath();ctx.ellipse(-116,237,25,31,-.2,0,Math.PI*2);ctx.ellipse(116,237,25,31,.2,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='#1c4265';ctx.lineWidth=58;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(-128,75);ctx.quadraticCurveTo(-210,151,-120,232);ctx.moveTo(128,75);ctx.quadraticCurveTo(210,151,120+gesture,232+gesture*.32);ctx.stroke();
+  ctx.fillStyle='#b97858';ctx.beginPath();ctx.ellipse(-116,237,25,31,-.2,0,Math.PI*2);ctx.ellipse(116+gesture,237+gesture*.32,25,31,.2,0,Math.PI*2);ctx.fill();
   // Tablette professionnelle tenue devant lui
-  ctx.save();ctx.translate(0,164);ctx.rotate(-.025+Math.sin(t*1.5)*.012);
+  ctx.save();ctx.translate(0,164+Math.sin(t*1.5)*3);ctx.rotate(-.025+Math.sin(t*1.5)*.018);
   roundedRect(ctx,-139,-79,278,166,14,'#f8f7f2','#d9e0e5',3);roundedRect(ctx,-139,-79,278,31,10,'#173957');
   text(ctx,'GESTILYS',0,-63,{size:14,weight:900,color:'#fff',tracking:2});
   for(let i=0;i<3;i++){roundedRect(ctx,-105,-24+i*32,210-i*24,7,4,'#d5dde2');}
