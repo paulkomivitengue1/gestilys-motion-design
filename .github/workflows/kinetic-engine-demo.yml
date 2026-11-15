@@ -1,0 +1,47 @@
+name: Rendu de démonstration — moteur cinétique Gestilys
+
+on:
+  push:
+    branches:
+      - motion-engine/kinetic-v1
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gestilys-kinetic-engine
+  cancel-in-progress: true
+
+jobs:
+  render:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - name: Installer FFmpeg
+        run: sudo apt-get update -y && sudo apt-get install -y ffmpeg
+      - name: Installer les dépendances existantes
+        run: npm ci --no-audit --no-fund
+      - name: Vérifier la syntaxe
+        run: |
+          node --check src/kinetic-engine.js
+          node --check src/kinetic-demo.js
+          node --check scripts/render-kinetic.mjs
+      - name: Rendre 330 images animées
+        run: npm run render:kinetic
+      - name: Encoder la vidéo de démonstration
+        run: ffmpeg -hide_banner -loglevel error -y -framerate 30 -i kinetic-frames/%05d.png -c:v libx264 -preset medium -crf 18 -pix_fmt yuv420p -movflags +faststart gestilys-kinetic-demo.mp4
+      - name: Vérifier le fichier MP4
+        run: |
+          ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height,r_frame_rate -show_entries format=duration -of json gestilys-kinetic-demo.mp4
+          test "$(ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 gestilys-kinetic-demo.mp4 | cut -d. -f1)" -ge 10
+      - name: Publier l'aperçu comme artefact
+        uses: actions/upload-artifact@v4
+        with:
+          name: gestilys-kinetic-engine-demo
+          path: gestilys-kinetic-demo.mp4
+          retention-days: 7
