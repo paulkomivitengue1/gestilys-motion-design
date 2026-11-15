@@ -1,5 +1,9 @@
 {
-  "video": { "fps": 30, "width": 1080, "height": 1920 },
+  "video": {
+    "fps": 30,
+    "width": 1080,
+    "height": 1920
+  },
   "colors": {
     "navy": "#071426",
     "navyDeep": "#030A15",
@@ -21,29 +25,72 @@
   "scenes": {
     "problem": {
       "duration": 5,
-      "headline": ["GÉRER UNE ÉCOLE", "NE DEVRAIT PAS", "ÊTRE COMPLIQUÉ."],
-      "accent": ["COMPLIQUÉ"]
+      "headline": [
+        "DIRIGER UNE ÉCOLE",
+        "NE DEVRAIT PAS",
+        "VOUS ÉPUISER."
+      ],
+      "accent": [
+        "ÉPUISER"
+      ]
     },
     "transition": {
       "duration": 6,
-      "headline": ["TOUT RASSEMBLER", "CHANGE TOUT."],
-      "accent": ["TOUT", "CHANGE"]
+      "headline": [
+        "TOUT RASSEMBLER",
+        "CHANGE TOUT."
+      ],
+      "accent": [
+        "TOUT",
+        "CHANGE"
+      ]
     },
     "solution": {
       "duration": 8,
       "features": [
-        { "id": "students", "enabled": true, "kicker": "ÉLÈVES & CLASSES" },
-        { "id": "payments", "enabled": true, "kicker": "SUIVI DES PAIEMENTS" },
-        { "id": "report", "enabled": true, "kicker": "BULLETINS SCOLAIRES" },
-        { "id": "receipts", "enabled": true, "kicker": "REÇUS · EXEMPLE" },
-        { "id": "enrollment", "enabled": false, "kicker": "INSCRIPTIONS" }
+        {
+          "id": "students",
+          "enabled": true,
+          "kicker": "ÉLÈVES & CLASSES"
+        },
+        {
+          "id": "payments",
+          "enabled": true,
+          "kicker": "SUIVI DES PAIEMENTS"
+        },
+        {
+          "id": "report",
+          "enabled": true,
+          "kicker": "BULLETINS SCOLAIRES"
+        },
+        {
+          "id": "receipts",
+          "enabled": true,
+          "kicker": "REÇUS · EXEMPLE"
+        },
+        {
+          "id": "enrollment",
+          "enabled": false,
+          "kicker": "INSCRIPTIONS"
+        }
       ]
     },
-    "signature": { "duration": 6 },
-    "close": { "duration": 3 }
+    "signature": {
+      "duration": 6
+    },
+    "close": {
+      "duration": 3
+    }
   },
   "audio": {
     "voiceoverOffsetSeconds": 0.4,
-    "voiceoverCues": [0.3, 5.3, 11.3, 15.2, 20.0, 25.2]
+    "voiceoverCues": [
+      0.3,
+      5.3,
+      11.3,
+      15.2,
+      20,
+      25.2
+    ]
   }
 }
