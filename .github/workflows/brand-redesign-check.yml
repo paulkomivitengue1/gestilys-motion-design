@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - arena/5364221e-gestilys-motion-design
+      - review/director-illustration-v2
 
 permissions:
   contents: read
