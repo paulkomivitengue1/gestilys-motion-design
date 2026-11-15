@@ -1,0 +1,59 @@
+name: Vérifier le nouveau motion design Gestilys
+
+on:
+  push:
+    branches:
+      - arena/5364221e-gestilys-motion-design
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gestilys-brand-redesign-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  render-and-verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Récupérer les sources
+        uses: actions/checkout@v7
+      - name: Installer Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+      - name: Installer FFmpeg
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg
+      - name: Installer les dépendances
+        run: npm ci --no-audit --no-fund
+      - name: Vérifier la syntaxe JavaScript
+        run: |
+          node --check src/scenes.js
+          node --check scripts/make-score.mjs
+      - name: Vérifier la configuration
+        run: npm run check
+      - name: Rendre les 840 images
+        run: npm run render
+      - name: Encoder la vidéo
+        run: bash scripts/encode.sh
+      - name: Générer et mixer la bande-son originale
+        env:
+          GENERATE_MUSIC: "1"
+        run: bash scripts/mux.sh
+      - name: Vérifier les vidéos finales
+        run: |
+          bash scripts/verify.sh out/gestilys-pub-1080x1920.mp4
+          bash scripts/verify.sh out/gestilys-pub-whatsapp.mp4
+      - name: Publier les MP4 comme artefacts de contrôle
+        uses: actions/upload-artifact@v7
+        with:
+          name: gestilys-brand-redesign-review
+          path: |
+            out/gestilys-pub-1080x1920.mp4
+            out/gestilys-pub-whatsapp.mp4
+          compression-level: 0
+          retention-days: 7
