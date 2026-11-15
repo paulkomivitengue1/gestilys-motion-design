@@ -104,10 +104,43 @@ function drawCore(c,t,start) {
     const e=out((t-start-2.2-i*.12)/.4);c.save();c.globalAlpha=e;c.translate((i-1)*6,(96+i*57)+(1-e)*20);c.rotate((i-1)*-.025);shadow(c,22,'rgba(0,0,0,.28)',9);box(c,-224,-21,448,42,5,'rgba(13,34,54,.96)','rgba(248,213,138,.5)',1);c.shadowColor='transparent';label(c,str,0,7,15,'#f5e5c4',800,'center',2.3);c.restore();
   });c.restore();
 }
+function drawDirector(c,t,relief=0) {
+  // Personnage vectoriel original : émotion lisible, sans photo ni asset externe.
+  const bob=Math.sin(t*5.4)*4, smile=mix(-5,13,relief), armY=mix(-112,-34,relief);
+  c.save();c.translate(540,1390+bob);
+  c.fillStyle='rgba(0,0,0,.24)';c.beginPath();c.ellipse(0,360,205,25,0,0,Math.PI*2);c.fill();
+  // Torse et veste
+  const body=c.createLinearGradient(-150,80,160,360);body.addColorStop(0,'#244b78');body.addColorStop(1,'#102b4b');
+  c.beginPath();c.moveTo(-76,20);c.quadraticCurveTo(-164,46,-180,168);c.lineTo(-150,352);c.quadraticCurveTo(0,385,150,352);c.lineTo(180,168);c.quadraticCurveTo(164,46,76,20);c.closePath();c.fillStyle=body;c.fill();
+  c.beginPath();c.moveTo(-48,20);c.lineTo(0,95);c.lineTo(48,20);c.lineTo(26,220);c.lineTo(0,245);c.lineTo(-26,220);c.closePath();c.fillStyle='#f4eee2';c.fill();
+  c.beginPath();c.moveTo(-20,78);c.lineTo(0,103);c.lineTo(20,78);c.lineTo(12,214);c.lineTo(0,230);c.lineTo(-12,214);c.closePath();c.fillStyle='#d97706';c.fill();
+  // Bras animés : crispation au début, détente après la transformation
+  c.lineCap='round';c.lineJoin='round';c.strokeStyle='#18385d';c.lineWidth=43;
+  c.beginPath();c.moveTo(-112,armY);c.quadraticCurveTo(-190,mix(-210,-8,relief),-150,mix(-170,100,relief));c.stroke();
+  c.beginPath();c.moveTo(112,armY);c.quadraticCurveTo(190,mix(-210,-8,relief),150,mix(-170,100,relief));c.stroke();
+  c.fillStyle='#9b5e3e';[-150,150].forEach((x,i)=>{c.beginPath();c.arc(x,mix(-170,100,relief),27,0,Math.PI*2);c.fill();});
+  // Cou et visage
+  c.fillStyle='#9b5e3e';roundPath(c,-34,-36,68,88,22);c.fill();
+  const skin=c.createLinearGradient(-100,-300,100,-70);skin.addColorStop(0,'#c98760');skin.addColorStop(1,'#8e5137');
+  c.beginPath();c.ellipse(0,-190,105,128,0,0,Math.PI*2);c.fillStyle=skin;c.fill();
+  // Oreilles
+  c.beginPath();c.ellipse(-101,-183,19,31,0,0,Math.PI*2);c.ellipse(101,-183,19,31,0,0,Math.PI*2);c.fillStyle='#9b5e3e';c.fill();
+  // Cheveux
+  c.beginPath();c.moveTo(-104,-203);c.quadraticCurveTo(-123,-330,-25,-333);c.quadraticCurveTo(80,-354,107,-253);c.lineTo(95,-216);c.quadraticCurveTo(35,-268,-12,-247);c.quadraticCurveTo(-60,-218,-104,-203);c.closePath();c.fillStyle='#182536';c.fill();
+  // Sourcils, yeux et expression
+  const brow=mix(11,-2,relief);c.strokeStyle='#35251f';c.lineWidth=8;c.beginPath();c.moveTo(-63,-229+brow);c.lineTo(-25,-222-brow);c.moveTo(25,-222-brow);c.lineTo(63,-229+brow);c.stroke();
+  c.fillStyle='#fff';c.beginPath();c.ellipse(-43,-196,17,11,0,0,Math.PI*2);c.ellipse(43,-196,17,11,0,0,Math.PI*2);c.fill();
+  c.fillStyle='#241b19';c.beginPath();c.arc(-41,-195,6,0,Math.PI*2);c.arc(41,-195,6,0,Math.PI*2);c.fill();
+  c.strokeStyle='#603426';c.lineWidth=7;c.beginPath();c.moveTo(-30,-132);c.quadraticCurveTo(0,-132+smile,30,-132);c.stroke();
+  // Dossier tenu devant lui au départ, puis badge de validation après organisation
+  const cardP=1-relief;c.save();c.translate(0,90);c.rotate(-.08*cardP);box(c,-94,-53,188,120,9,'#fff8ea','#e4d5bd',2);label(c,'DOSSIERS',0,-13,15,'#253b54',850,'center',1);for(let i=0;i<3;i++){box(c,-62,5+i*20,124-i*17,5,2,'#c5ced6');}c.restore();
+  c.restore();
+}
 function drawImpact(c,t,cfg) {
   bg(c,t,500,.31);grid(c,t,1200);rings(c,540,480,382,t,.82);particleField(c,t,31,49,1550);topLabel(c,'L’ADMINISTRATION PEUT ÊTRE PLUS SIMPLE',t,.08);
-  drawToken(c,'DOSSIERS',170,288,t,.16,-.1);drawToken(c,'01 / 08',875,372,t,.39,.1);drawToken(c,'LISTES',850,625,t,.74,.08);drawToken(c,'PAIEMENTS',190,680,t,.94,-.08);
-  wordLines(c,cfg.scenes.problem.headline,t,.46,{size:77,lineH:104,y:870,accent:cfg.scenes.problem.accent,step:.095,gap:19});
+  drawToken(c,'DOSSIERS',170,288,t,.16,-.1);drawToken(c,'LISTES',850,625,t,.74,.08);drawToken(c,'PAIEMENTS',190,680,t,.94,-.08);
+  drawDirector(c,t,0);
+  wordLines(c,cfg.scenes.problem.headline,t,.22,{size:76,lineH:101,y:870,accent:cfg.scenes.problem.accent,step:.075,gap:17});
   const p=out((t-2.17)/.6);if(p){c.save();c.globalAlpha=p;label(c,'Votre énergie mérite mieux que la paperasse.',540,1212,30,'rgba(233,239,246,.82)',450,'center',.3);c.restore();}
   beam(c,1422,t,3.82,.95);
 }
