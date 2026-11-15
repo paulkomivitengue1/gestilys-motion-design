@@ -105,35 +105,81 @@ function drawCore(c,t,start) {
   });c.restore();
 }
 function drawDirector(c,t,relief=0) {
-  // Personnage vectoriel original : émotion lisible, sans photo ni asset externe.
-  const bob=Math.sin(t*5.4)*4, smile=mix(-5,13,relief), armY=mix(-112,-34,relief);
+  // Illustration éditoriale détaillée : volumes, éclairage, vêtements et expression.
+  const bob=Math.sin(t*3.2)*3, tension=1-relief;
   c.save();c.translate(540,1390+bob);
-  c.fillStyle='rgba(0,0,0,.24)';c.beginPath();c.ellipse(0,360,205,25,0,0,Math.PI*2);c.fill();
-  // Torse et veste
-  const body=c.createLinearGradient(-150,80,160,360);body.addColorStop(0,'#244b78');body.addColorStop(1,'#102b4b');
-  c.beginPath();c.moveTo(-76,20);c.quadraticCurveTo(-164,46,-180,168);c.lineTo(-150,352);c.quadraticCurveTo(0,385,150,352);c.lineTo(180,168);c.quadraticCurveTo(164,46,76,20);c.closePath();c.fillStyle=body;c.fill();
-  c.beginPath();c.moveTo(-48,20);c.lineTo(0,95);c.lineTo(48,20);c.lineTo(26,220);c.lineTo(0,245);c.lineTo(-26,220);c.closePath();c.fillStyle='#f4eee2';c.fill();
-  c.beginPath();c.moveTo(-20,78);c.lineTo(0,103);c.lineTo(20,78);c.lineTo(12,214);c.lineTo(0,230);c.lineTo(-12,214);c.closePath();c.fillStyle='#d97706';c.fill();
-  // Bras animés : crispation au début, détente après la transformation
-  c.lineCap='round';c.lineJoin='round';c.strokeStyle='#18385d';c.lineWidth=43;
-  c.beginPath();c.moveTo(-112,armY);c.quadraticCurveTo(-190,mix(-210,-8,relief),-150,mix(-170,100,relief));c.stroke();
-  c.beginPath();c.moveTo(112,armY);c.quadraticCurveTo(190,mix(-210,-8,relief),150,mix(-170,100,relief));c.stroke();
-  c.fillStyle='#9b5e3e';[-150,150].forEach((x,i)=>{c.beginPath();c.arc(x,mix(-170,100,relief),27,0,Math.PI*2);c.fill();});
-  // Cou et visage
-  c.fillStyle='#9b5e3e';roundPath(c,-34,-36,68,88,22);c.fill();
-  const skin=c.createLinearGradient(-100,-300,100,-70);skin.addColorStop(0,'#c98760');skin.addColorStop(1,'#8e5137');
-  c.beginPath();c.ellipse(0,-190,105,128,0,0,Math.PI*2);c.fillStyle=skin;c.fill();
-  // Oreilles
-  c.beginPath();c.ellipse(-101,-183,19,31,0,0,Math.PI*2);c.ellipse(101,-183,19,31,0,0,Math.PI*2);c.fillStyle='#9b5e3e';c.fill();
-  // Cheveux
-  c.beginPath();c.moveTo(-104,-203);c.quadraticCurveTo(-123,-330,-25,-333);c.quadraticCurveTo(80,-354,107,-253);c.lineTo(95,-216);c.quadraticCurveTo(35,-268,-12,-247);c.quadraticCurveTo(-60,-218,-104,-203);c.closePath();c.fillStyle='#182536';c.fill();
-  // Sourcils, yeux et expression
-  const brow=mix(11,-2,relief);c.strokeStyle='#35251f';c.lineWidth=8;c.beginPath();c.moveTo(-63,-229+brow);c.lineTo(-25,-222-brow);c.moveTo(25,-222-brow);c.lineTo(63,-229+brow);c.stroke();
-  c.fillStyle='#fff';c.beginPath();c.ellipse(-43,-196,17,11,0,0,Math.PI*2);c.ellipse(43,-196,17,11,0,0,Math.PI*2);c.fill();
-  c.fillStyle='#241b19';c.beginPath();c.arc(-41,-195,6,0,Math.PI*2);c.arc(41,-195,6,0,Math.PI*2);c.fill();
-  c.strokeStyle='#603426';c.lineWidth=7;c.beginPath();c.moveTo(-30,-132);c.quadraticCurveTo(0,-132+smile,30,-132);c.stroke();
-  // Dossier tenu devant lui au départ, puis badge de validation après organisation
-  const cardP=1-relief;c.save();c.translate(0,90);c.rotate(-.08*cardP);box(c,-94,-53,188,120,9,'#fff8ea','#e4d5bd',2);label(c,'DOSSIERS',0,-13,15,'#253b54',850,'center',1);for(let i=0;i<3;i++){box(c,-62,5+i*20,124-i*17,5,2,'#c5ced6');}c.restore();
+  // Ombre au sol et halo de détourage
+  const halo=c.createRadialGradient(0,65,35,0,65,360);
+  halo.addColorStop(0,'rgba(217,166,78,.17)');halo.addColorStop(1,'rgba(217,166,78,0)');
+  c.fillStyle=halo;c.beginPath();c.ellipse(0,80,310,390,0,0,Math.PI*2);c.fill();
+  c.fillStyle='rgba(0,0,0,.30)';c.beginPath();c.ellipse(0,365,205,25,0,0,Math.PI*2);c.fill();
+
+  // Bras et mains derrière le dossier
+  const sleeve=c.createLinearGradient(-190,80,190,310);
+  sleeve.addColorStop(0,'#315a83');sleeve.addColorStop(.48,'#183b61');sleeve.addColorStop(1,'#0d2745');
+  c.lineCap='round';c.lineJoin='round';c.strokeStyle=sleeve;c.lineWidth=62;
+  c.beginPath();c.moveTo(-105,95);c.bezierCurveTo(-192,125,-195,225,-122,258);c.stroke();
+  c.beginPath();c.moveTo(105,95);c.bezierCurveTo(192,125,195,225,122,258);c.stroke();
+
+  // Buste : veste structurée, revers et coutures
+  const jacket=c.createLinearGradient(-180,40,190,370);
+  jacket.addColorStop(0,'#315d88');jacket.addColorStop(.35,'#1d4269');jacket.addColorStop(1,'#0b2440');
+  c.beginPath();c.moveTo(-72,5);c.bezierCurveTo(-145,16,-177,68,-188,164);
+  c.lineTo(-164,352);c.quadraticCurveTo(0,385,164,352);c.lineTo(188,164);
+  c.bezierCurveTo(177,68,145,16,72,5);c.closePath();c.fillStyle=jacket;c.fill();
+  c.strokeStyle='rgba(170,202,225,.30)';c.lineWidth=3;c.beginPath();
+  c.moveTo(-151,112);c.quadraticCurveTo(-165,222,-145,337);c.moveTo(151,112);c.quadraticCurveTo(165,222,145,337);c.stroke();
+  // Chemise et revers du blazer
+  c.beginPath();c.moveTo(-48,9);c.lineTo(0,78);c.lineTo(48,9);c.lineTo(33,239);c.lineTo(0,272);c.lineTo(-33,239);c.closePath();c.fillStyle='#f6f1e8';c.fill();
+  c.beginPath();c.moveTo(-70,15);c.lineTo(-22,104);c.lineTo(-42,178);c.lineTo(-105,67);c.closePath();c.fillStyle='#274d73';c.fill();
+  c.beginPath();c.moveTo(70,15);c.lineTo(22,104);c.lineTo(42,178);c.lineTo(105,67);c.closePath();c.fillStyle='#183958';c.fill();
+  c.beginPath();c.moveTo(-15,88);c.lineTo(0,108);c.lineTo(15,88);c.lineTo(9,224);c.lineTo(0,241);c.lineTo(-9,224);c.closePath();c.fillStyle='#c98536';c.fill();
+  c.beginPath();c.arc(83,230,5,0,Math.PI*2);c.fillStyle='#e2b65f';c.fill();
+
+  // Cou et visage, modelés par trois valeurs de lumière
+  const neck=c.createLinearGradient(-35,-55,38,5);neck.addColorStop(0,'#7d4635');neck.addColorStop(.5,'#b97856');neck.addColorStop(1,'#75402f');
+  c.fillStyle=neck;roundPath(c,-35,-65,70,112,22);c.fill();
+  const skin=c.createLinearGradient(-105,-320,100,-70);
+  skin.addColorStop(0,'#d99a72');skin.addColorStop(.38,'#bd805c');skin.addColorStop(.76,'#9b6046');skin.addColorStop(1,'#75412f');
+  c.beginPath();c.moveTo(-100,-222);c.quadraticCurveTo(-111,-302,-56,-329);
+  c.quadraticCurveTo(0,-354,57,-326);c.quadraticCurveTo(111,-292,101,-205);
+  c.lineTo(88,-142);c.quadraticCurveTo(70,-82,0,-73);c.quadraticCurveTo(-70,-82,-88,-142);c.closePath();c.fillStyle=skin;c.fill();
+  // Pommettes et oreilles
+  c.fillStyle='rgba(235,164,125,.22)';c.beginPath();c.ellipse(-62,-165,27,18,0,0,Math.PI*2);c.ellipse(62,-165,27,18,0,0,Math.PI*2);c.fill();
+  c.fillStyle='#a9684c';c.beginPath();c.ellipse(-101,-184,17,27,-.12,0,Math.PI*2);c.ellipse(101,-184,17,27,.12,0,Math.PI*2);c.fill();
+  c.fillStyle='#d18b65';c.beginPath();c.ellipse(-101,-184,8,15,0,0,Math.PI*2);c.ellipse(101,-184,8,15,0,0,Math.PI*2);c.fill();
+  // Chevelure texturée et ligne frontale
+  c.fillStyle='#172231';c.beginPath();c.moveTo(-103,-208);c.bezierCurveTo(-128,-283,-94,-347,-25,-350);
+  c.bezierCurveTo(48,-367,111,-326,109,-249);c.lineTo(94,-218);
+  c.quadraticCurveTo(68,-259,28,-263);c.quadraticCurveTo(-18,-278,-54,-246);
+  c.quadraticCurveTo(-79,-224,-103,-208);c.closePath();c.fill();
+  c.strokeStyle='rgba(112,132,148,.35)';c.lineWidth=4;
+  for(let i=0;i<7;i++){c.beginPath();c.moveTo(-76+i*22,-290-(i%2)*9);c.quadraticCurveTo(-44+i*19,-329-(i%3)*5,-17+i*19,-320);c.stroke();}
+  // Sourcils, yeux avec reflets et paupières
+  const brow=mix(9,-2,relief);
+  c.strokeStyle='#4b3026';c.lineWidth=8;c.lineCap='round';c.beginPath();
+  c.moveTo(-68,-231+brow);c.quadraticCurveTo(-45,-242+brow,-23,-229-brow);
+  c.moveTo(23,-229-brow);c.quadraticCurveTo(45,-242+brow,68,-231+brow);c.stroke();
+  c.fillStyle='#f8eee3';c.beginPath();c.ellipse(-43,-198,19,12,0,0,Math.PI*2);c.ellipse(43,-198,19,12,0,0,Math.PI*2);c.fill();
+  c.fillStyle='#34231d';c.beginPath();c.arc(-41,-198,7,0,Math.PI*2);c.arc(41,-198,7,0,Math.PI*2);c.fill();
+  c.fillStyle='#fff';c.beginPath();c.arc(-43,-201,2.5,0,Math.PI*2);c.arc(39,-201,2.5,0,Math.PI*2);c.fill();
+  // Nez et bouche : crispation qui devient expression sereine
+  c.strokeStyle='rgba(104,57,42,.62)';c.lineWidth=4;c.beginPath();c.moveTo(0,-190);c.quadraticCurveTo(-8,-155,1,-151);c.quadraticCurveTo(10,-146,18,-153);c.stroke();
+  c.strokeStyle='#754334';c.lineWidth=6;c.beginPath();c.moveTo(-31,-126);c.quadraticCurveTo(0,-126+mix(-8,15,relief),31,-126);c.stroke();
+  c.strokeStyle='rgba(245,194,157,.5)';c.lineWidth=2;c.beginPath();c.moveTo(-17,-116);c.quadraticCurveTo(0,-111+relief*4,17,-116);c.stroke();
+
+  // Dossier de direction tenu à deux mains
+  const cardP=1-relief;c.save();c.translate(0,119);c.rotate(-.045*cardP);
+  shadow(c,20,'rgba(0,0,0,.22)',10);box(c,-116,-68,232,145,10,'#fffaf0','#e4d6bd',2);c.shadowColor='transparent';
+  box(c,-116,-68,232,25,8,'#1c3d60');c.fillStyle='#1c3d60';c.fillRect(-116,-53,232,10);
+  label(c,'DOSSIER DE DIRECTION',0,-26,12,'#263d52',850,'center',.8);
+  for(let i=0;i<3;i++){box(c,-83,0+i*23,166-i*18,6,3,'#c4cdd4');}
+  c.fillStyle='#d59d48';c.beginPath();c.arc(83,50,13,0,Math.PI*2);c.fill();
+  c.strokeStyle='#fff';c.lineWidth=3;c.beginPath();c.moveTo(77,50);c.lineTo(82,55);c.lineTo(90,44);c.stroke();
+  c.restore();
+  // Main droite posée sur le dossier
+  const hand=c.createLinearGradient(0,220,0,290);hand.addColorStop(0,'#c48763');hand.addColorStop(1,'#965b43');
+  c.fillStyle=hand;c.beginPath();c.ellipse(-103,190,24,34,-.35,0,Math.PI*2);c.ellipse(103,190,24,34,.35,0,Math.PI*2);c.fill();
   c.restore();
 }
 function drawImpact(c,t,cfg) {
