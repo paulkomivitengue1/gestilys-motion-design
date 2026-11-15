@@ -43,7 +43,7 @@ jobs:
             -i out/cinematic-music.wav \
             -map 0:v:0 -map 1:a:0 \
             -c:v libx264 -preset medium -crf 18 -pix_fmt yuv420p \
-            -r 30 -c:a aac -b:a 192k -shortest -movflags +faststart \
+            -r 30 -c:a aac -b:a 192k -ac 2 -shortest -movflags +faststart \
             out/gestilys-cinematic-55s.mp4
       - name: Vérifier le MP4 et le décodage complet
         run: bash scripts/verify-cinematic-55.sh
