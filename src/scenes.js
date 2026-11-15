@@ -187,7 +187,7 @@ function drawImpact(c,t,cfg) {
   drawToken(c,'DOSSIERS',170,288,t,.16,-.1);drawToken(c,'LISTES',850,625,t,.74,.08);drawToken(c,'PAIEMENTS',190,680,t,.94,-.08);
   drawDirector(c,t,0);
   wordLines(c,cfg.scenes.problem.headline,t,.22,{size:76,lineH:101,y:870,accent:cfg.scenes.problem.accent,step:.075,gap:17});
-  const p=out((t-2.17)/.6);if(p){c.save();c.globalAlpha=p;label(c,'Votre énergie mérite mieux que la paperasse.',540,1212,30,'rgba(233,239,246,.82)',450,'center',.3);c.restore();}
+  const p=out((t-2.17)/.6);if(p){c.save();c.globalAlpha=p;label(c,'Votre énergie mérite mieux que la paperasse.',540,790,30,'rgba(233,239,246,.82)',450,'center',.3);c.restore();}
   beam(c,1422,t,3.82,.95);
 }
 function drawOrder(c,t,cfg) {
