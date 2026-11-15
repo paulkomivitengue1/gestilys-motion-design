@@ -1,0 +1,69 @@
+name: Publicité Gestilys — campagne cinématographique 55 s
+on:
+  push:
+    branches:
+      - campaign/cinematic-55s
+permissions:
+  contents: write
+concurrency:
+  group: gestilys-cinematic-55s
+  cancel-in-progress: false
+jobs:
+  render:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Récupérer le projet
+        uses: actions/checkout@v4
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - name: Installer FFmpeg
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg
+      - name: Installer les dépendances
+        run: npm ci --no-audit --no-fund
+      - name: Vérifier la syntaxe
+        run: |
+          node --check src/cinematic-55.js
+          node --check scripts/render-cinematic-55.mjs
+          bash -n scripts/make-cinematic-music.sh
+          bash -n scripts/verify-cinematic-55.sh
+      - name: Rendre les 1 650 images
+        run: node scripts/render-cinematic-55.mjs
+      - name: Générer la musique originale
+        run: bash scripts/make-cinematic-music.sh
+      - name: Encoder le MP4 vertical
+        run: |
+          ffmpeg -hide_banner -loglevel error -y \
+            -framerate 30 -i out/frames/%05d.png \
+            -i out/cinematic-music.wav \
+            -map 0:v:0 -map 1:a:0 \
+            -c:v libx264 -preset medium -crf 18 -pix_fmt yuv420p \
+            -r 30 -c:a aac -b:a 192k -shortest -movflags +faststart \
+            out/gestilys-cinematic-55s.mp4
+      - name: Vérifier le MP4 et le décodage complet
+        run: bash scripts/verify-cinematic-55.sh
+      - name: Publier le MP4 téléchargeable
+        uses: actions/upload-artifact@v4
+        with:
+          name: gestilys-cinematic-55s
+          path: out/gestilys-cinematic-55s.mp4
+          compression-level: 0
+          retention-days: 90
+      - name: Publier une Release avec lien direct
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_NUMBER: ${{ github.run_number }}
+        run: |
+          TAG="gestilys-cinematic-55s-${RUN_NUMBER}"
+          gh release create "$TAG" out/gestilys-cinematic-55s.mp4 \
+            --title "Gestilys — publicité cinématographique 55 s" \
+            --notes "MP4 vertical 1080×1920, 30 i/s, H.264/AAC, 55 secondes. Voix off non incluse ; script synchronisé dans voiceover/script-55s.md."
+          URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/download/${TAG}/gestilys-cinematic-55s.mp4"
+          echo "## Publicité Gestilys — 55 secondes" >> "$GITHUB_STEP_SUMMARY"
+          echo "MP4 : $URL" >> "$GITHUB_STEP_SUMMARY"
+          echo "Voix off : ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/${GITHUB_REF_NAME}/voiceover/script-55s.md" >> "$GITHUB_STEP_SUMMARY"
