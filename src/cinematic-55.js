@@ -11,7 +11,7 @@ function box(c,x,y,w,h,r,fill,stroke=null,sw=1){
 }
 function label(c,s,x,y,size=28,color=WHITE,weight=700,align='left',spacing=0){
   c.save();c.font=weight+' '+size+'px "DM Sans",sans-serif';c.textAlign=align;c.textBaseline='alphabetic';c.fillStyle=color;
-  if(spacing){const a=[...s],w=a.reduce((n,ch)=>n+c.measureText(ch).width,0)+spacing*(a.length-1);let px=x-(align==='center'?w/2:align==='right'?w:0);for(const ch of a){c.fillText(ch,px,y);px+=c.measureText(ch).width+spacing;}}
+  if(spacing>0){const a=[...s],w=a.reduce((n,ch)=>n+c.measureText(ch).width,0)+spacing*(a.length-1);let px=x-(align==='center'?w/2:align==='right'?w:0);for(const ch of a){c.fillText(ch,px,y);px+=c.measureText(ch).width+spacing;}}
   else c.fillText(s,x,y);c.restore();
 }
 function shadow(c,blur=24,color='rgba(0,0,0,.28)',y=14){c.shadowColor=color;c.shadowBlur=blur;c.shadowOffsetX=0;c.shadowOffsetY=y;}
