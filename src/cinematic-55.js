@@ -96,7 +96,7 @@ function paper(c,x,y,rot,s,t,at){
 function sceneIntro(c,t,cfg){
   office(c,t);drawDirector(c,t,.04);
   title(c,'GESTION D’ÉTABLISSEMENT', ['DIRIGER UNE ÉCOLE,','C’EST BIEN PLUS QUE','GÉRER DES ÉLÈVES.'],t,{at:.15,y:380,size:59,lineH:76,accent:[2]});
-  tag(c,'COORDONNER',170,1000,t,.35,-.08);tag(c,'ORGANISER',885,990,t,.8,.07);tag(c,'DÉCIDER',540,1065,t,1.2,0);
+  tag(c,'COORDONNER',170,780,t,.35,-.08);tag(c,'ORGANISER',885,780,t,.8,.07);tag(c,'DÉCIDER',540,690,t,1.2,0);
   const p=out((t-4.4)/.55);if(p){c.save();c.globalAlpha=p;label(c,'Chaque jour, plusieurs responsabilités.',540,890,25,'rgba(241,245,248,.84)',600,'center');c.restore();}
   beam(c,t,1440);
 }
