@@ -2,12 +2,36 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8">
-  <title>Gestilys — publicité 9:16</title>
-  <meta name="viewport" content="width=1080, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#030a15">
+  <title>Gestilys — motion design · aperçu du projet</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div id="stage"></div>
-  <script src="scenes.js"></script>
+  <main class="preview">
+    <canvas id="frame" width="1080" height="1920" aria-label="Aperçu animé de la publicité Gestilys"></canvas>
+    <nav class="controls" aria-label="Commandes vidéo">
+      <button id="toggle" type="button" aria-label="Mettre en pause">Ⅱ</button>
+      <input id="scrub" type="range" min="0" max="28" step="0.033333" value="0" aria-label="Position de lecture">
+      <output id="clock">00:00</output>
+    </nav>
+  </main>
+  <script type="module">
+    import { renderFrame } from './scenes.js';
+    const cfg = await (await fetch('../config/video.config.json')).json();
+    const font = new FontFace('DM Sans', 'url(../node_modules/@fontsource-variable/dm-sans/files/dm-sans-latin-wght-normal.woff2)');
+    try { document.fonts.add(await font.load()); } catch (e) { console.warn('DM Sans unavailable; system sans-serif fallback used.', e); }
+    const canvas = document.querySelector('#frame'), ctx = canvas.getContext('2d');
+    const scrub = document.querySelector('#scrub'), clock = document.querySelector('#clock'), toggle = document.querySelector('#toggle');
+    const duration = 28; let paused = false, held = 0, start = performance.now();
+    function tick(now) {
+      let t = paused ? held : ((now - start) / 1000) % duration;
+      renderFrame(ctx, t, cfg); scrub.value = String(t); clock.value = `${String(Math.floor(t/60)).padStart(2,'0')}:${String(Math.floor(t%60)).padStart(2,'0')}`;
+      requestAnimationFrame(tick);
+    }
+    toggle.addEventListener('click', () => { paused = !paused; if (paused) held = (performance.now()-start)/1000%duration; else start = performance.now()-held*1000; toggle.textContent = paused ? '▶' : 'Ⅱ'; toggle.setAttribute('aria-label',paused?'Lire':'Mettre en pause'); });
+    scrub.addEventListener('input', () => { held = Number(scrub.value); paused = true; toggle.textContent='▶'; start=performance.now()-held*1000; });
+    requestAnimationFrame(tick);
+  </script>
 </body>
 </html>

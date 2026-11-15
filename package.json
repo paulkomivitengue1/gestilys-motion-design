@@ -2,7 +2,7 @@
   "name": "gestilys-motion-design",
   "version": "1.0.0",
   "private": true,
-  "description": "Publicité vidéo 9:16 de Gestilys, rendue avec Chromium (Playwright) et FFmpeg.",
+  "description": "Publicité Gestilys 9:16, rendue de façon déterministe avec Canvas 2D/Skia et FFmpeg.",
   "type": "module",
   "scripts": {
     "check": "node scripts/check-config.mjs",
@@ -10,6 +10,7 @@
     "preview": "PREVIEW=1 node scripts/render.mjs"
   },
   "dependencies": {
-    "playwright": "1.49.1"
+    "@fontsource-variable/dm-sans": "5.2.8",
+    "@napi-rs/canvas": "1.1.1"
   }
 }

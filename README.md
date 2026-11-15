@@ -1,92 +1,70 @@
-# gestilys-motion-design
+# Gestilys — campagne motion design verticale
 
-Publicité vidéo verticale (MP4, 9:16, 1080 × 1920, ~37 s) pour **Gestilys**, logiciel de gestion scolaire.
-Tout se fait depuis un téléphone : GitHub dans Chrome, aucun logiciel à installer, coût 0 FCFA.
+Une publicité verticale **originale de 28 secondes**, conçue pour Gestilys : 1080 × 1920 (9:16), 30 images/s, MP4 H.264 avec piste AAC. La nouvelle création utilise une direction artistique bleu-encre / or, une typographie cinétique, des documents qui se recomposent en tableau de bord, des interfaces fictives, des cartes en profondeur, un emblème G dessiné en lumière et une conclusion dédiée à l'appel à l'action.
 
-## Installation (une seule fois, 2 minutes)
+## Livrables
 
-Les deux fichiers de workflow GitHub Actions sont dans le dossier `installer-workflows/`. GitHub n'autorise pas l'application Claude à les écrire directement dans `.github/workflows/` : il faut les **déplacer toi-même**, sans rien copier-coller.
+- `gestilys-campagne-28s-1080x1920.mp4` — master final vertical, H.264/AAC.
+- `out/gestilys-pub-whatsapp.mp4` — version de partage plus légère (créée au rendu local; le dossier `out/` est ignoré par Git).
+- Sources déterministes sous `src/`, `scripts/` et `config/`.
 
-Pour **chacun** des deux fichiers (`render-video.yml`, puis `add-audio.yml`) :
+La vidéo est produite à partir de **840 images calculées par Canvas 2D/Skia** et encodée par FFmpeg. Aucune vidéo stock, image préfabriquée, API distante ou musique sous licence tierce n'est utilisée. La partition synthétique `scripts/make-score.mjs` est créée par le projet (arpèges, nappes harmoniques et impulsions discrètes); elle est facultative.
 
-1. Ouvre le fichier dans le dépôt (dossier `installer-workflows`).
-2. Touche l'icône **crayon** (Edit). Si elle n'apparaît pas, passe Chrome en **Version pour ordinateur** (menu ⋮ → Version pour ordinateur).
-3. En haut, dans le champ du nom de fichier, remplace `installer-workflows/` par `.github/workflows/` (le chemin final doit être `.github/workflows/render-video.yml`, puis `.github/workflows/add-audio.yml`).
-4. Touche **Commit changes…** puis **Commit changes** (directement sur `main`).
+## Direction artistique et scénario
 
-Ensuite, l'onglet **Actions** affiche les deux workflows (si GitHub propose d'activer les workflows, accepte). Tu peux alors supprimer le dossier `installer-workflows/` ou le laisser.
-
-## Obtenir la vidéo (depuis Chrome sur Android)
-
-1. Ouvre le dépôt sur GitHub → onglet **Actions**.
-2. Choisis **Rendre la publicité Gestilys** → **Run workflow**.
-   - `mode = apercu` : en quelques minutes, quelques images clés (PNG) pour juger le design.
-   - `mode = video` : le MP4 complet (compte environ 10 à 25 min).
-3. Quand le rond devient vert, ouvre l'exécution :
-   - **Release** (recommandé) : lien dans le résumé de l'exécution, puis onglet **Releases** du dépôt → touche le fichier `.mp4` pour le télécharger directement.
-   - ou section **Artifacts** en bas de la page de l'exécution (MP4 direct, ou archive ZIP de secours).
-4. Fichiers produits :
-   - `gestilys-pub-1080x1920.mp4` : qualité maître (piste audio AAC toujours présente, même sans voix off).
-   - `gestilys-pub-whatsapp.mp4` : même vidéo, plus légère pour WhatsApp.
-   - `gestilys-video-sans-audio.mp4` : vidéo maître sans audio, réutilisée pour ajouter la voix off plus tard.
-
-Conseil : lance d'abord `mode = apercu` pour vérifier le design en quelques minutes avant le rendu complet.
-Si une étape échoue (croix rouge), ouvre-la : les messages d'erreur sont affichés en clair dans le journal.
-
-## Modifier textes, couleurs, durées
-
-Ouvre `config/video.config.json` dans GitHub → icône crayon → modifie → **Commit changes**.
-Le workflow vérifie la configuration avant le rendu et affiche les erreurs.
-
-- `colors` : bleu marine, blanc, orange doré (codes `#RRGGBB`).
-- `brand` : nom, descriptif, slogan, appel à l'action (`cta`), mention « écrans illustratifs ».
-- `scenes.*.duration` : durée de chaque séquence en secondes (total conseillé : 30 à 40 s).
-- `scenes.solution.features` : écrans montrés dans la séquence 3.
-
-### Fonctionnalités présentées (important)
-
-Chaque écran correspond à une fonctionnalité du logiciel. Mets `"enabled": true` **uniquement** pour celles qui existent réellement dans Gestilys :
-
-| id | écran | état par défaut |
+| Temps | Mouvement | Idée |
 |---|---|---|
-| `students` | Élèves et classes | activé |
-| `payments` | Suivi des paiements (tranches) | activé |
-| `report` | Bulletins scolaires | activé |
-| `enrollment` | Inscriptions | désactivé (à confirmer) |
-| `receipts` | Reçus de paiement | désactivé (à confirmer) |
+| 0–5 s | Impact | Orbites, poussières lumineuses, fragments documentaires et arrivée des mots « GÉRER UNE ÉCOLE NE DEVRAIT PAS ÊTRE COMPLIQUÉ. » |
+| 5–11 s | Du désordre à l'ordre | Listes, paiements, reçus et notes volent, se réduisent, se rangent dans un noyau lumineux; « TOUT RASSEMBLER CHANGE TOUT. » |
+| 11–19 s | Solution | Interface scolaire illustrée en profondeur : élèves/classes, paiements suivis, progression graphique, reçu et bulletin. Statistiques fictives, sans témoignage ni promesse de résultat. |
+| 19–25 s | Identité | Le G se trace dans une composition de rayons, d'orbites et de particules; « Gestilys — La gestion scolaire, simplifiée. » |
+| 25–28 s | Conclusion | Logo, « VOTRE ÉCOLE, MIEUX ORGANISÉE. » et « DEMANDEZ UNE DÉMONSTRATION. », avec une sortie douce. |
 
-Les écrans utilisent des **données fictives** (noms, montants) et la vidéo affiche la mention « Écrans illustratifs · données fictives ». Aucune statistique, aucun témoignage, aucun résultat chiffré n'est affiché.
-Si tu changes le nombre d'écrans, la durée de chacun s'adapte (`scenes.solution.duration` ÷ nombre d'écrans) ; adapte aussi le texte de la voix off (`voiceover/script.md`).
+Les données présentées dans l'interface sont fictives et la mention « Écrans illustratifs · données fictives » est affichée. La maquette de reçu est incluse comme demandé pour ce concept publicitaire; vérifie qu'elle correspond bien à une fonction disponible dans le produit avant diffusion. L'écran d'inscriptions, non confirmé, n'est pas présenté.
 
-## Voix off et musique (facultatives)
+## Générer la vidéo en local
 
-La vidéo se rend **sans** voix off ni musique. Pour les ajouter plus tard, sans refaire les images :
+Prérequis : Node.js 22, npm et FFmpeg/FFprobe. Le dépôt embarque Canvas/Skia précompilé et DM Sans via les dépendances npm; aucune installation Chromium n'est nécessaire.
 
-1. Dépose les fichiers dans le dossier `audio/` (GitHub → `audio` → **Add file → Upload files**) — détails dans `audio/README.md`.
-2. Actions → **Ajouter la voix off et la musique** → Run workflow (≈ 2 min).
+```bash
+npm ci
+npm run check
+npm run preview          # images clés, dans out/preview/
+npm run render           # 840 PNG dans frames/
+bash scripts/encode.sh   # master vidéo sans audio
+GENERATE_MUSIC=1 bash scripts/mux.sh
+bash scripts/verify.sh out/gestilys-pub-1080x1920.mp4
+```
 
-Le texte à enregistrer, le découpage temporel et la méthode d'obtention (avec vérification des droits) sont dans `voiceover/script.md`.
+Les PNG intermédiaires et vidéos de travail sont ignorés par Git (`frames/`, `out/`, `build/`). Le rendu complet peut être relancé : pour une même configuration, les images, la timeline et la partition musicale sont déterministes.
 
-## Pourquoi cette méthode
+Pour contrôler l'animation dans un navigateur, lancer un serveur à la racine du dépôt et ouvrir `/src/` (le fichier `src/index.html` expose pause, lecture et scrub).
 
-Chromium (Playwright) affiche la page HTML/CSS `src/`, on avance le temps image par image (résultat identique à chaque rendu), puis FFmpeg assemble le MP4 sur un exécuteur Ubuntu de GitHub Actions.
+## GitHub Actions
 
-- **Remotion** (alternative React) : licence gratuite pour une organisation à but lucratif de 3 personnes maximum, licence payante au-delà (conditions officielles consultées le 28/10/2026 : remotion.dev/license). Il faut donc que tu puisses garantir le seuil des 3 personnes, y compris les freelances. Playwright + FFmpeg n'imposent aucune condition de ce type, d'où ce choix : moins de risque pour un usage commercial.
-- **GitHub Actions** : gratuit pour les exécuteurs Linux standard dans un dépôt **public** (docs.github.com, consultée le 28/10/2026). Ne passe pas ce dépôt en privé et n'utilise pas d'exécuteurs « larger », qui sont toujours payants.
-- Les artefacts et journaux sont conservés 14 jours (réglable : `retention-days` dans les workflows ; les Releases, elles, restent).
-- Le rendu n'utilise aucune API payante ni service externe : dépendances `playwright` (1.49.1) et `ffmpeg` (paquet Ubuntu).
+Le workflow **Rendre la publicité Gestilys** (`.github/workflows/render-video.yml`) est manuel : Actions → workflow → Run workflow.
+
+- `mode = apercu` rend un lot d'images clés.
+- `mode = video` rend et encode les 840 images, ajoute par défaut la partition originale, puis valide les deux MP4.
+- Les fichiers sont téléchargeables comme artefacts; l'option Release publie aussi le master, la version WhatsApp et le master sans audio.
+
+Le workflow utilise les mêmes scripts et les mêmes contrôles que la génération locale. La dépendance de rendu est `@napi-rs/canvas`; FFmpeg est fourni par l'exécuteur Ubuntu. Aucune licence commerciale Remotion, API payante ou service de génération externe n'est requis.
 
 ## Structure
 
 ```
-config/video.config.json      textes, couleurs, durées, fonctionnalités, minutage de la voix
-src/                          scène HTML/CSS/JS (animations pilotées par le temps)
-scripts/render.mjs            capture image par image (Chromium)
-scripts/encode.sh             assemblage H.264 (vidéo maître sans audio)
-scripts/mux.sh                mixage voix off + musique, versions finale et WhatsApp
-scripts/verify.sh             contrôle 1080×1920, H.264, AAC, durée
-scripts/make-music.sh         nappe musicale libre de droits générée (facultative)
-audio/                        voix off et musique à déposer
-voiceover/script.md           texte, minutage et droits de la voix off
-installer-workflows/          les 2 workflows à déplacer dans .github/workflows/ (voir Installation)
+config/video.config.json       palette, marque, 5 scènes et minutage
+src/scenes.js                  moteur Canvas 2D déterministe des scènes
+src/index.html                 aperçu temps réel avec commandes
+src/styles.css                 interface de l'aperçu
+scripts/render.mjs             rendu des PNG, sélection d'aperçu ou 840 images
+scripts/encode.sh              assemblage H.264
+scripts/mux.sh                 AAC, partition/voix optionnelles et version légère
+scripts/make-score.mjs         partition instrumentale originale, générée en PCM
+scripts/verify.sh               vérification codec, taille, cadence et durée
+.github/workflows/             rendu, vérification, artefacts et Releases
 ```
+
+## Ce qui change par rapport à l'ancien export
+
+Le dépôt ne contient pas les anciennes vidéos, mais le code source confirme une structure antérieure de 37 s en quatre scènes, avec un premier texte affiché sur des feuilles et post-its superposés, une séquence intermédiaire de transition indépendante, puis les interfaces montrées une à une dans de grands panneaux frontaux et une longue signature de marque. La nouvelle campagne n'est pas une recoloration de cette version : elle resserre le récit en cinq actes de 28 s, introduit un motif récurrent d'orbites et de lumière, transforme graphiquement le désordre en système, compose un tableau de bord plus riche et superposé, et distingue clairement la révélation d'identité du carton d'appel à l'action.

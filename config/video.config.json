@@ -1,49 +1,49 @@
 {
   "video": { "fps": 30, "width": 1080, "height": 1920 },
   "colors": {
-    "navy": "#0A1F44",
-    "navyDeep": "#050F26",
-    "navyMid": "#12306A",
-    "white": "#FFFFFF",
-    "mist": "#E9EFFA",
-    "gold": "#F5A623",
-    "goldLight": "#FFC85C",
-    "ink": "#0A1F44",
-    "muted": "#6B7C9E"
+    "navy": "#071426",
+    "navyDeep": "#030A15",
+    "navyMid": "#102B4B",
+    "white": "#F8F6F0",
+    "mist": "#C9D4E1",
+    "gold": "#D9A64E",
+    "goldLight": "#F8D58A",
+    "ink": "#101B2A",
+    "muted": "#718096"
   },
   "brand": {
     "name": "Gestilys",
     "descriptor": "Logiciel de gestion scolaire",
-    "tagline": "Votre école, mieux organisée.",
-    "cta": "Découvrez Gestilys",
+    "tagline": "La gestion scolaire, simplifiée.",
+    "cta": "Demandez une démonstration",
     "disclaimer": "Écrans illustratifs · données fictives"
   },
   "scenes": {
     "problem": {
-      "duration": 9,
-      "headline": ["Gérer une école", "demande du temps", "et de l’organisation."],
-      "accent": ["temps", "organisation"],
-      "notes": ["Registres", "Paiements à relancer", "Bulletins à saisir", "Listes de classe"]
+      "duration": 5,
+      "headline": ["GÉRER UNE ÉCOLE", "NE DEVRAIT PAS", "ÊTRE COMPLIQUÉ."],
+      "accent": ["COMPLIQUÉ"]
     },
     "transition": {
       "duration": 6,
-      "headline": ["Et si vous simplifiiez", "votre quotidien\u00a0?"],
-      "accent": ["simplifiiez"]
+      "headline": ["TOUT RASSEMBLER", "CHANGE TOUT."],
+      "accent": ["TOUT", "CHANGE"]
     },
     "solution": {
-      "duration": 14,
+      "duration": 8,
       "features": [
-        { "id": "students", "enabled": true, "kicker": "Élèves & classes", "title": "Tous vos élèves, classe par classe" },
-        { "id": "enrollment", "enabled": false, "kicker": "Inscriptions", "title": "Inscrivez vos élèves en quelques étapes" },
-        { "id": "payments", "enabled": true, "kicker": "Paiements", "title": "Suivez les paiements de la scolarité" },
-        { "id": "receipts", "enabled": false, "kicker": "Reçus", "title": "Un reçu pour chaque paiement" },
-        { "id": "report", "enabled": true, "kicker": "Bulletins", "title": "Préparez les bulletins scolaires" }
+        { "id": "students", "enabled": true, "kicker": "ÉLÈVES & CLASSES" },
+        { "id": "payments", "enabled": true, "kicker": "SUIVI DES PAIEMENTS" },
+        { "id": "report", "enabled": true, "kicker": "BULLETINS SCOLAIRES" },
+        { "id": "receipts", "enabled": true, "kicker": "REÇUS · EXEMPLE" },
+        { "id": "enrollment", "enabled": false, "kicker": "INSCRIPTIONS" }
       ]
     },
-    "signature": { "duration": 8 }
+    "signature": { "duration": 6 },
+    "close": { "duration": 3 }
   },
   "audio": {
-    "voiceoverOffsetSeconds": 0.6,
-    "voiceoverCues": [0.6, 4.8, 9.6, 13.0, 15.6, 20.2, 24.9, 30.0, 34.0]
+    "voiceoverOffsetSeconds": 0.4,
+    "voiceoverCues": [0.3, 5.3, 11.3, 15.2, 20.0, 25.2]
   }
 }
