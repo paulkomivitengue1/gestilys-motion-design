@@ -1,0 +1,18 @@
+{
+  "video": { "fps": 30, "width": 1080, "height": 1920, "bpm": 120, "duration": 28 },
+  "colors": {
+    "navyDeep": "#050F26", "navy": "#0A1F44", "navyMid": "#12306A",
+    "white": "#FFFFFF", "mist": "#E9EFFA", "gold": "#F5A623", "goldLight": "#FFC85C", "muted": "#6B7C9E"
+  },
+  "timeline": { "impact": [0, 5], "problem": [5, 11], "solution": [11, 19], "identity": [19, 25], "conclusion": [25, 28] },
+  "texts": {
+    "impact": ["GÉRER", "UNE ÉCOLE", "NE DEVRAIT", "PAS ÊTRE", "COMPLIQUÉ."],
+    "problem": ["TOUT RASSEMBLER", "CHANGE TOUT."],
+    "wordmark": "GESTILYS",
+    "slogan": "LA GESTION SCOLAIRE, SIMPLIFIÉE.",
+    "closing": ["VOTRE ÉCOLE,", "MIEUX ORGANISÉE."],
+    "cta": ["DEMANDEZ UNE", "DÉMONSTRATION."],
+    "disclaimer": "Écrans illustratifs · données fictives"
+  },
+  "features": { "dashboard": true, "students": true, "payments": true, "receipts": true, "report": true }
+}
