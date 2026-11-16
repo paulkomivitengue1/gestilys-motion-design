@@ -1,5 +1,7 @@
 name: Aperçu personnage Gestilys
 on:
+  push:
+    branches: [rebuild/kinetic-motion-v1]
   workflow_dispatch:
 permissions:
   contents: read
