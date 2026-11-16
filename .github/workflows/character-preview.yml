@@ -1,0 +1,37 @@
+name: Aperçu personnage Gestilys
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  preview:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: rebuild/kinetic-motion-v1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-audit --no-fund && npx playwright install --with-deps chromium
+      - name: Capturer les images de contrôle
+        run: |
+          mkdir -p out/character-preview
+          node --input-type=module <<'NODE'
+          import { chromium } from 'playwright';
+          const browser = await chromium.launch({headless:true});
+          const page = await browser.newPage({viewport:{width:1080,height:1920},deviceScaleFactor:1});
+          for (const t of [0,1,2,3,4,5,6]) {
+            await page.goto('file://' + process.cwd() + '/src/character-prototype.html');
+            await page.waitForTimeout(1300);
+            await page.screenshot({path:'out/character-preview/frame-'+t+'.png'});
+            await page.evaluate(async time => { document.getAnimations().forEach(a=>{a.pause();a.currentTime=time*1000;}); },t);
+            await page.screenshot({path:'out/character-preview/at-'+t+'.png'});
+          }
+          await browser.close();
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gestilys-character-preview
+          path: out/character-preview/
+          retention-days: 14
