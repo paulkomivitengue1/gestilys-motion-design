@@ -1,0 +1,100 @@
+name: Studio — rendre la publicité Gestilys (motion design v3)
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "apercu = images clés (≈ 2 min) ; video = MP4 complet"
+        type: choice
+        default: video
+        options: [video, apercu]
+      publish_release:
+        description: "Publier le MP4 dans une Release GitHub"
+        type: boolean
+        default: false
+  push:
+    branches: [ai-studio-foundation]
+    paths: ["studio/**", "scripts/studio-*", ".github/workflows/studio-render.yml"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: studio-render
+  cancel-in-progress: true
+
+jobs:
+  studio:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      WORKERS: "4"
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+
+      - name: Installer FFmpeg et les polices
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg fonts-liberation
+          sudo apt-get install -y fonts-inter || echo "::warning::Police Inter indisponible, police de secours utilisée"
+          fc-cache -f; echo "Police « Inter » → $(fc-match Inter)"
+
+      - name: Installer Playwright et Chromium
+        run: |
+          npm install --no-audit --no-fund
+          npx playwright install --with-deps chromium
+
+      - name: Contrôle de mise en page (aucun texte coupé)
+        run: node scripts/studio-qa.mjs
+
+      - name: Aperçu (images clés)
+        if: ${{ inputs.mode == 'apercu' }}
+        run: TIMES="0.3,1.5,3,4.4,6.2,9.4,12.3,14.3,16.1,18.3,20.3,22.9,25.6,26.8" node scripts/studio-render.mjs
+
+      - name: Publier l'aperçu
+        if: ${{ inputs.mode == 'apercu' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: studio-apercu
+          path: out/studio-preview/
+          retention-days: 14
+
+      - name: Rendre les 840 images
+        if: ${{ inputs.mode != 'apercu' }}
+        run: node scripts/studio-render.mjs
+
+      - name: Assembler le MP4 (H.264 + musique originale)
+        if: ${{ inputs.mode != 'apercu' }}
+        run: bash scripts/studio-build.sh
+
+      - name: Vérifier le MP4 (format, durée, images noires ou figées)
+        if: ${{ inputs.mode != 'apercu' }}
+        run: |
+          bash scripts/studio-verify.sh out/gestilys-studio-1080x1920.mp4
+          bash scripts/studio-verify.sh out/gestilys-studio-whatsapp.mp4
+
+      - name: Archive du MP4 (2 fichiers)
+        if: ${{ inputs.mode != 'apercu' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: gestilys-studio-video
+          path: |
+            out/gestilys-studio-1080x1920.mp4
+            out/gestilys-studio-whatsapp.mp4
+          compression-level: 0
+          retention-days: 14
+
+      - name: Publier dans une Release GitHub
+        if: ${{ inputs.mode != 'apercu' && inputs.publish_release }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_NUMBER: ${{ github.run_number }}
+        run: |
+          TAG="studio-${RUN_NUMBER}"
+          gh release create "$TAG" out/gestilys-studio-1080x1920.mp4 out/gestilys-studio-whatsapp.mp4 \
+            --title "Publicité Gestilys v3 — rendu n°${RUN_NUMBER}" \
+            --notes "MP4 vertical 1080×1920, 28 s, 30 i/s, H.264 + musique originale."
+          echo "Release : ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/tag/${TAG}" >> "$GITHUB_STEP_SUMMARY"
