@@ -1,0 +1,58 @@
+name: Gestilys AI Studio — test sans API
+
+on:
+  push:
+    branches:
+      - ai-studio-foundation
+
+permissions:
+  contents: read
+
+jobs:
+  self-test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v7
+      - name: Installer Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+      - name: Installer les dépendances du moteur
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y fonts-liberation fonts-noto-core ffmpeg
+          npm install --no-audit --no-fund
+          npx playwright install --with-deps chromium
+          fc-cache -f
+      - name: Vérifier la syntaxe JavaScript et les scripts shell
+        run: |
+          node --check scripts/generate-brief.mjs
+          node --check scripts/plan-scenes.mjs
+          node --check scripts/render.mjs
+          node --check scripts/render-approved.mjs
+          node --check scripts/run-ai-studio.mjs
+          node --check scripts/create-audio-plan.mjs
+          node --check scripts/generate-voice-piper.mjs
+          node --check scripts/test-ai-studio.mjs
+          bash -n scripts/encode-ai-studio.sh
+          bash -n scripts/verify-ai-studio.sh
+          bash -n scripts/mix-ai-studio-audio.sh
+          bash -n scripts/verify-ai-studio-audio.sh
+      - name: Tester la chaîne complète sans clé API
+        run: node scripts/test-ai-studio.mjs
+      - name: Conserver les résultats utiles (sans les centaines d'images intermédiaires)
+        uses: actions/upload-artifact@v7
+        with:
+          name: gestilys-ai-studio-self-test
+          path: |
+            out/ai-studio/proposal.json
+            out/ai-studio/scenario.md
+            out/ai-studio/scene-plan.json
+            out/ai-studio/render-config.json
+            out/ai-studio/audio-plan.json
+            out/ai-studio/preview/*.png
+            out/ai-studio/gestilys-video-sans-audio.mp4
+            out/ai-studio/gestilys-video-avec-audio.mp4
+          retention-days: 3

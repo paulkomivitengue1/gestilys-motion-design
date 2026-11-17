@@ -1,0 +1,48 @@
+name: Gestilys AI Studio — scénario publicitaire
+
+on:
+  workflow_dispatch:
+    inputs:
+      brief:
+        description: "Consigne publicitaire (produit, public, objectif, ton)"
+        required: true
+        type: string
+      model:
+        description: "Modèle Gemini"
+        required: false
+        default: "gemini-2.5-flash"
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gestilys-ai-studio-script
+  cancel-in-progress: false
+
+jobs:
+  script:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v7
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+
+      - name: Générer et contrôler le scénario
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ inputs.model }}
+          AD_BRIEF: ${{ inputs.brief }}
+        run: node scripts/generate-brief.mjs
+
+      - name: Publier la proposition comme artefact
+        uses: actions/upload-artifact@v7
+        with:
+          name: gestilys-ai-studio-proposition
+          path: out/ai-studio/
+          retention-days: 7

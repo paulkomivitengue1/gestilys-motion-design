@@ -7,7 +7,15 @@
   "scripts": {
     "check": "node scripts/check-config.mjs",
     "render": "node scripts/render.mjs",
-    "preview": "PREVIEW=1 node scripts/render.mjs"
+    "preview": "PREVIEW=1 node scripts/render.mjs",
+    "ai-studio:prepare": "node scripts/run-ai-studio.mjs prepare",
+    "ai-studio:preview": "node scripts/run-ai-studio.mjs preview",
+    "ai-studio:render": "node scripts/run-ai-studio.mjs render",
+    "ai-studio:encode": "bash scripts/encode-ai-studio.sh",
+    "ai-studio:audio-plan": "node scripts/create-audio-plan.mjs",
+    "ai-studio:audio-mix": "node scripts/run-ai-studio.mjs audio",
+    "ai-studio:orchestrate": "node scripts/run-ai-studio.mjs",
+    "ai-studio:voice": "node scripts/generate-voice-piper.mjs"
   },
   "dependencies": {
     "playwright": "1.49.1"
