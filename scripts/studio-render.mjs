@@ -7,6 +7,9 @@ import { pathToFileURL, fileURLToPath } from 'node:url';
 const root = resolve(fileURLToPath(new URL('.', import.meta.url)), '..');
 const cfg = JSON.parse(readFileSync(join(root, 'studio', 'config.json'), 'utf8'));
 const { fps, width, height, duration } = cfg.video;
+const cuesFile = join(root, 'out', 'studio-voice', 'cues.json');
+const cues = existsSync(cuesFile) ? JSON.parse(readFileSync(cuesFile, 'utf8')) : [];
+console.log(cues.length ? `Sous-titres : ${cues.length} (out/studio-voice/cues.json)` : 'Sous-titres : aucun (pas de voix générée)');
 const workers = Math.max(1, Math.min(8, parseInt(process.env.WORKERS || '4', 10) || 4));
 const times = process.env.TIMES ? process.env.TIMES.split(',').map(Number) : null;
 const outDir = resolve(root, process.env.FRAMES_DIR || (times ? 'out/studio-preview' : 'out/studio-frames'));
@@ -28,7 +31,7 @@ async function worker(id) {
   const page = await ctx.newPage();
   page.on('pageerror', (e) => errors.push('pageerror: ' + e.message));
   page.on('console', (m) => { if (m.type() === 'error') errors.push('console: ' + m.text()); });
-  await page.addInitScript((c) => { window.__CONFIG__ = c; }, cfg);
+  await page.addInitScript(([c, s]) => { window.__CONFIG__ = c; window.__SUBS__ = s; }, [cfg, cues]);
   await page.goto(url, { waitUntil: 'load' });
   await page.waitForFunction(() => window.__READY__ === true || !!window.__ERROR__, null, { timeout: 60000 });
   const err = await page.evaluate(() => window.__ERROR__ || null);

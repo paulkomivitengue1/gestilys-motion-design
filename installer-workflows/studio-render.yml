@@ -1,9 +1,8 @@
 name: Studio — rendre la publicité Gestilys (motion design v3)
 
-# À COPIER vers .github/workflows/studio-render.yml (geste manuel : l'app Claude ne peut pas écrire dans .github/workflows).
+# À COPIER vers .github/workflows/studio-render.yml (remplace la version actuelle).
 # Lancement manuel : Actions → « Studio — rendre la publicité Gestilys » → Run workflow.
-# Se relance aussi à chaque modification du dossier studio/ sur la branche ai-studio-foundation.
-# Dépôt public + exécuteur Linux standard = gratuit. Aucune API payante.
+# Gratuit : dépôt public + exécuteur Linux standard. Voix Piper locale (aucune clé API).
 on:
   workflow_dispatch:
     inputs:
@@ -12,6 +11,11 @@ on:
         type: choice
         default: video
         options: [video, apercu]
+      voice:
+        description: "Voix off : piper (voix masculine configurée dans studio/voice.json), file (vos enregistrements dans audio/voice/) ou none"
+        type: choice
+        default: piper
+        options: [piper, file, none]
       publish_release:
         description: "Publier le MP4 dans une Release GitHub"
         type: boolean
@@ -30,9 +34,10 @@ concurrency:
 jobs:
   studio:
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 60
     env:
       WORKERS: "4"
+      VOICE_PROVIDER: ${{ inputs.voice || 'piper' }}
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -51,7 +56,14 @@ jobs:
           npm install --no-audit --no-fund
           npx playwright install --with-deps chromium
 
-      - name: Contrôle de mise en page (aucun texte coupé)
+      - name: Installer Piper (voix gratuite)
+        if: ${{ env.VOICE_PROVIDER == 'piper' }}
+        run: python3 -m pip install --break-system-packages piper-tts
+
+      - name: Voix off, minutage et sous-titres
+        run: node scripts/studio-voice.mjs
+
+      - name: Contrôle de mise en page (textes et sous-titres)
         run: node scripts/studio-qa.mjs
 
       - name: Aperçu (images clés)
@@ -70,17 +82,17 @@ jobs:
         if: ${{ inputs.mode != 'apercu' }}
         run: node scripts/studio-render.mjs
 
-      - name: Assembler le MP4 (H.264 + musique originale)
+      - name: Assembler le MP4 (voix + musique + sous-titres)
         if: ${{ inputs.mode != 'apercu' }}
         run: bash scripts/studio-build.sh
 
-      - name: Vérifier le MP4 (format, durée, images noires ou figées)
+      - name: Vérifier le MP4 (format, durée, images, audio, voix)
         if: ${{ inputs.mode != 'apercu' }}
         run: |
           bash scripts/studio-verify.sh out/gestilys-studio-1080x1920.mp4
           bash scripts/studio-verify.sh out/gestilys-studio-whatsapp.mp4
 
-      - name: Archive du MP4 (2 fichiers)
+      - name: Archive du MP4
         if: ${{ inputs.mode != 'apercu' }}
         uses: actions/upload-artifact@v7
         with:
@@ -88,6 +100,8 @@ jobs:
           path: |
             out/gestilys-studio-1080x1920.mp4
             out/gestilys-studio-whatsapp.mp4
+            out/studio-voice/VOICE-ATTRIBUTION.txt
+            out/studio-voice/timing.json
           compression-level: 0
           retention-days: 14
 
@@ -100,5 +114,5 @@ jobs:
           TAG="studio-${RUN_NUMBER}"
           gh release create "$TAG" out/gestilys-studio-1080x1920.mp4 out/gestilys-studio-whatsapp.mp4 \
             --title "Publicité Gestilys v3 — rendu n°${RUN_NUMBER}" \
-            --notes "MP4 vertical 1080×1920, 28 s, 30 i/s, H.264 + musique originale."
+            --notes "MP4 vertical 1080×1920, 28 s, 30 i/s, H.264, voix off + musique originale + sous-titres."
           echo "Release : ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/tag/${TAG}" >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,14 @@
+{
+  "provider": "piper",
+  "piper": { "voice": "fr_FR-tom-medium", "note": "Voix masculine. Licence du modèle : AGPLv3 (fiche Piper) — à valider avant un usage commercial. Autres voix : changer 'voice' ou utiliser le fournisseur 'file'." },
+  "file": { "dir": "audio/voice", "note": "Déposez audio/voice/<id>.wav ou .mp3 (une voix obtenue par vos propres moyens, droits à vérifier)." },
+  "maxSpeedup": 1.12,
+  "maxCueChars": 40,
+  "segments": [
+    { "id": "hook", "start": 0.5, "end": 4.7, "text": "Gérer une école ne devrait pas être compliqué." },
+    { "id": "order", "start": 8.1, "end": 10.4, "text": "Tout rassembler change tout." },
+    { "id": "solution", "start": 11.6, "end": 18.4, "text": "Élèves, paiements, reçus, bulletins : tout votre établissement, dans un seul outil." },
+    { "id": "brand", "start": 21.4, "end": 24.4, "text": "Gestilys. La gestion scolaire, simplifiée." },
+    { "id": "cta", "start": 26.0, "end": 27.9, "text": "Demandez une démonstration." }
+  ]
+}

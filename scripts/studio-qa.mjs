@@ -1,6 +1,6 @@
 // Contrôle automatique de la mise en page : aucun texte coupé ni hors écran aux instants où il doit être lisible.
 import { chromium } from 'playwright';
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 const root = resolve(fileURLToPath(new URL('.', import.meta.url)), '..');
@@ -28,6 +28,19 @@ for (const t of HOLDS) {
     return out;
   });
   if (res.length) { bad += res.length; console.log(`t=${t}s : HORS ÉCRAN`, res); } else console.log(`t=${t}s : OK`);
+}
+// sous-titres : au milieu de chaque cue, le texte doit être dans l'écran, sur 2 lignes maximum
+const cf = join(root, 'out', 'studio-voice', 'cues.json');
+if (existsSync(cf)) {
+  const cues = JSON.parse(readFileSync(cf, 'utf8'));
+  await page.evaluate((s) => { window.__SUBS__ = s; }, cues);
+  for (const c of cues) {
+    await page.evaluate((x) => window.seek(x), (c.s + c.e) / 2);
+    const r = await page.evaluate(() => { const e = document.querySelector('#subs span'); if (!e) return null; const b = e.getBoundingClientRect(); return { l: b.left, r: b.right, t: b.top, b: b.bottom, h: b.height, o: parseFloat(getComputedStyle(document.getElementById('subs')).opacity) }; });
+    if (!r || r.o < 0.9) { bad++; console.log(`sous-titre « ${c.text} » absent à t=${((c.s + c.e) / 2).toFixed(2)}`); }
+    else if (r.l < 20 || r.r > 1060 || r.b > 1900 || r.h > 160) { bad++; console.log(`sous-titre « ${c.text} » hors zone : [${r.l | 0},${r.t | 0},${r.r | 0},${r.b | 0}]`); }
+    else console.log(`sous-titre OK : « ${c.text} »`);
+  }
 }
 await browser.close();
 if (errs.length) { console.error('Erreurs JS :', errs); process.exit(1); }
