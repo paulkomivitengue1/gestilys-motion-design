@@ -324,9 +324,9 @@
       dots.forEach(function (d, i) {
         var a = st[i], b = i < n - 1 ? st[i + 1] : 18.6, act = P(t, a - 0.05, a + 0.25) * (1 - P(t, b - 0.05, b + 0.25));
         d.style.width = (14 + 56 * act) + 'px'; d.style.background = act > 0.5 ? '#F5A623' : 'rgba(255,255,255,.28)';
-        place(d, { x: 540 + (i - (n - 1) / 2) * 44 + (act * 0), y: 1745, o: P(t, 11.6, 12) * (1 - implode) });
+        place(d, { x: 540 + (i - (n - 1) / 2) * 44 + (act * 0), y: 1800, o: P(t, 11.6, 12) * (1 - implode) });
       });
-      place(disc, { x: 540, y: 1820, o: P(t, 12, 12.6) * (1 - implode) * 0.9 });
+      place(disc, { x: 540, y: 1862, o: P(t, 12, 12.6) * (1 - implode) * 0.9 });
       // légère dérive de caméra pendant tout l'univers « solution »
       $cam.style.transform = 'translate3d(' + (Math.sin(t * 0.5) * 12) + 'px,' + (Math.cos(t * 0.4) * 8) + 'px,' + (-(1 - P(t, 11, 12.2, E.outExpo)) * 700) + 'px) rotateY(' + (Math.sin(t * 0.45) * 1.6) + 'deg)';
     });
@@ -394,10 +394,22 @@
     return a;
   }
 
+  // sous-titres synchronisés sur la voix (cues injectées par le script de rendu : [{k,s,e,text}])
+  var subsEl = document.getElementById('subs');
+  function subsAt(t) {
+    var cues = window.__SUBS__ || [], cur = null, i;
+    for (i = 0; i < cues.length; i++) if (t >= cues[i].s && t < cues[i].e) { cur = cues[i]; break; }
+    if (!cur) { subsEl.style.opacity = 0; return; }
+    if (subsEl.getAttribute('data-k') !== cur.k) { subsEl.textContent = ''; mk('span', '', subsEl).textContent = cur.text; subsEl.setAttribute('data-k', cur.k); }
+    subsEl.style.opacity = clamp(Math.min((t - cur.s) / 0.12, (cur.e - t) / 0.12), 0, 1);
+    subsEl.style.transform = 'translateY(' + ((1 - clamp((t - cur.s) / 0.22)) * 16).toFixed(1) + 'px)';
+  }
+
   window.seek = function (t) {
     for (var i = 0; i < TICK.length; i++) TICK[i](t);
     if (t < 10.9 || t > 19.1) $cam.style.transform = t > 5 && t < 11 ? 'translate3d(0,0,' + (P(t, 10.2, 10.95, E.inExpo) * 700) + 'px)' : 'none';
     G.drawBG(bg, t); G.drawFG(fg, t);
+    subsAt(t);
     flash.style.opacity = flashAt(t);
     fade.style.opacity = P(t, 27.45, 27.98, E.inOutCubic);
   };
